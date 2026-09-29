@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Acceso Docente - AulaTap</title>
+  
+  <!-- Metas PWA & Mobile -->
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/svg+xml" href="/static/icons/icon-192.svg">
+  <link rel="apple-touch-icon" href="/static/icons/icon-192.svg">
+
+  <!-- Tipografía Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <style>
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 16px;
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .login-card {
+      width: 100%;
+      background: var(--bg-card);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-xl);
+      padding: 32px 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-card::after {
+      content: '';
+      position: absolute;
+      top: -40%;
+      left: -40%;
+      width: 180%;
+      height: 180%;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .login-brand-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .login-logo-box {
+      width: 62px;
+      height: 62px;
+      border-radius: 20px;
+      background: var(--grad-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px auto;
+      box-shadow: 0 8px 25px rgba(124, 58, 237, 0.5);
+    }
+
+    .login-title {
+      font-size: 1.6rem;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .login-subtitle {
+      font-size: 0.82rem;
+      color: var(--accent-cyan);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-field-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon-left {
+      position: absolute;
+      left: 14px;
+      color: var(--text-dim);
+      pointer-events: none;
+    }
+
+    .login-input {
+      width: 100%;
+      padding: 13px 14px 13px 44px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .login-input:focus {
+      border-color: var(--accent-purple);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .btn-toggle-pwd {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .btn-toggle-pwd:hover {
+      color: var(--text-main);
+    }
+
+    .btn-login-submit {
+      width: 100%;
+      padding: 15px;
+      border-radius: var(--radius-lg);
+      border: none;
+      background: var(--grad-primary);
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.5);
+      transition: all 0.25s ease;
+      margin-top: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-login-submit:active {
+      transform: scale(0.98);
+    }
+
+    .btn-login-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Mensaje de error */
+    .login-error-box {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      animation: shake 0.3s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <div class="login-card">
+      
+      <!-- Encabezado Brand -->
+      <div class="login-brand-header">
+        <div class="login-logo-box">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 8.32a7.43 7.43 0 0 1 0 7.36"></path>
+            <path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58"></path>
+            <path d="M12.91 4.1a15.91 15.91 0 0 1 .01 15.8"></path>
+            <path d="M16.37 2a20.16 20.16 0 0 1 0 20"></path>
+          </svg>
+        </div>
+        <h1 class="login-title">AulaTap</h1>
+        <div class="login-subtitle">Panel de Acceso Docente</div>
+      </div>
+
+      <!-- Alerta de Error -->
+      <div id="login-error-alert" class="login-error-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span id="login-error-text">Credenciales incorrectas</span>
+      </div>
+
+      <!-- Formulario de Login -->
+      <form id="login-form">
+        
+        <div class="form-group">
+          <label class="form-label" for="username-input">Usuario o Correo</label>
+          <div class="input-field-wrap">
+            <svg class="input-icon-left" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <input 
+              type="text" 
+              id="username-input" 
+              class="login-input" 
+              placeholder="Ej: docente" 
+              required 
+              autocomplete="username"
+              autofocus
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password-input">Contraseña</label>
+          <div class="input-field-wrap">
+            <svg class="input-icon-left" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <input 
+              type="password" 
+              id="password-input" 
+              class="login-input" 
+              placeholder="••••••••" 
+              required 
+              autocomplete="current-password"
+            >
+            <button type="button" class="btn-toggle-pwd" id="btn-toggle-pwd" title="Mostrar contraseña">
+              <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" id="btn-submit-login" class="btn-login-submit">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
+          Ingresar a AulaTap
+        </button>
+
+        <div style="margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center;">
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">¿Eres estudiante?</div>
+          <a href="/portal" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 11px 16px; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.4); border-radius: var(--radius-md); color: #a5b4fc; text-decoration: none; font-weight: 700; font-size: 0.86rem; transition: all 0.2s ease;">
+            <span>📚</span> Ir al Portal de Estudiantes & Biblioteca
+          </a>
+        </div>
+
+      </form>
+
+
+    </div>
+  </div>
+
+  <script>
+    // Toggle visibilidad de contraseña
+    const btnTogglePwd = document.getElementById('btn-toggle-pwd');
+    const pwdInput = document.getElementById('password-input');
+    btnTogglePwd.addEventListener('click', () => {
+      const isPassword = pwdInput.type === 'password';
+      pwdInput.type = isPassword ? 'text' : 'password';
+    });
+
+    // Envío del formulario
+    const loginForm = document.getElementById('login-form');
+    const btnSubmit = document.getElementById('btn-submit-login');
+    const errorAlert = document.getElementById('login-error-alert');
+    const errorText = document.getElementById('login-error-text');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorAlert.style.display = 'none';
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = 'Verificando...';
+
+      const username = document.getElementById('username-input').value.trim();
+      const password = document.getElementById('password-input').value;
+
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          btnSubmit.innerHTML = '¡Acceso correcto!';
+          // Redirigir a la app principal
+          window.location.href = '/';
+        } else {
+          errorText.textContent = data.error || 'Usuario o contraseña incorrectos.';
+          errorAlert.style.display = 'flex';
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+              <polyline points="10 17 15 12 10 7"></polyline>
+              <line x1="15" y1="12" x2="3" y2="12"></line>
+            </svg>
+            Ingresar a AulaTap
+          `;
+        }
+      } catch (err) {
+        errorText.textContent = 'Error de conexión con el servidor.';
+        errorAlert.style.display = 'flex';
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = 'Ingresar a AulaTap';
+      }
+    });
+  </script>
+</body>
+</html>

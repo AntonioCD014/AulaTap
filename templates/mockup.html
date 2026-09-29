@@ -1,0 +1,2537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AulaTap - Showcase & Mockup Interactivo en Profundidad</title>
+
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #070b14;
+      --bg-surface: #0f172a;
+      --bg-card: rgba(22, 30, 50, 0.85);
+      --border-glass: rgba(255, 255, 255, 0.12);
+      --accent-cyan: #06b6d4;
+      --accent-indigo: #6366f1;
+      --accent-purple: #8b5cf6;
+      --accent-gold: #f59e0b;
+      --accent-emerald: #10b981;
+      --accent-rose: #f43f5e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --grad-primary: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #d946ef 100%);
+      --grad-gold: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%);
+      --grad-cyan: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
+      --grad-emerald: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 32px;
+      --radius-pill: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.25) 0%, transparent 45%),
+        radial-gradient(circle at 90% 15%, rgba(217, 70, 239, 0.2) 0%, transparent 45%),
+        radial-gradient(circle at 50% 90%, rgba(6, 182, 212, 0.16) 0%, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Canvas Confetti */
+    #mockup-confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* Top Bar */
+    .showcase-header {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-glass);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      background: var(--grad-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 18px rgba(124, 58, 237, 0.45);
+    }
+
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+
+    .brand-sub {
+      font-size: 0.72rem;
+      color: var(--accent-cyan);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    /* Switchers */
+    .switcher-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .view-switcher-bar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 4px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-glass);
+    }
+
+    .switcher-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+    }
+
+    .switcher-btn:hover {
+      color: #ffffff;
+    }
+
+    .switcher-btn.active {
+      background: var(--grad-primary);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+    }
+
+    .mode-toggle-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-glass);
+      color: var(--text-main);
+      padding: 7px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .mode-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: var(--accent-cyan);
+    }
+
+    .btn-live-server {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #6ee7b7;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 7px 14px;
+      border-radius: var(--radius-pill);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-live-server:hover {
+      background: rgba(16, 185, 129, 0.28);
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+      color: #fff;
+    }
+
+    /* Main Showcase Layout */
+    .showcase-stage {
+      flex: 1;
+      width: 100%;
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 24px 20px 60px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Scenarios Top Bar */
+    .scenarios-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(16px);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .scenarios-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .scenarios-subtitle {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .scenario-chips-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .scenario-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-pill);
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 7px 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .scenario-chip:hover, .scenario-chip.active {
+      background: rgba(99, 102, 241, 0.25);
+      border-color: var(--accent-indigo);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+    }
+
+    /* 2-Columns Arena: Left Device, Right Deep Dive Console */
+    .arena-grid {
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    @media (max-width: 1080px) {
+      .arena-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Device Showcase Container */
+    .device-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      position: sticky;
+      top: 86px;
+    }
+
+    .device-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 440px;
+      padding: 6px 14px;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-pill);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .device-frame-wrapper {
+      position: relative;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      perspective: 1000px;
+    }
+
+    /* Realistic Smartphone Frame */
+    .phone-frame {
+      width: 100%;
+      max-width: 420px;
+      height: 820px;
+      background: #030712;
+      border-radius: 48px;
+      border: 11px solid #1e293b;
+      box-shadow: 
+        0 30px 70px -15px rgba(0, 0, 0, 0.9),
+        0 0 0 1px rgba(255, 255, 255, 0.12),
+        0 0 50px rgba(99, 102, 241, 0.22);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .phone-frame.tablet-mode {
+      max-width: 100% !important;
+      height: 700px !important;
+      border-radius: 22px !important;
+      border: 8px solid #1e293b !important;
+    }
+
+    /* Floating Physical NFC Keychain Animation */
+    .nfc-keychain-anim {
+      position: absolute;
+      top: 25%;
+      right: -25px;
+      width: 90px;
+      height: 120px;
+      background: linear-gradient(145deg, #2563eb, #1d4ed8);
+      border: 3px solid #60a5fa;
+      border-radius: 20px 20px 40px 40px;
+      box-shadow: 0 15px 35px rgba(37, 99, 235, 0.6), inset 0 2px 6px rgba(255,255,255,0.4);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.65rem;
+      text-align: center;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-20px) rotate(15deg);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .nfc-keychain-anim.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0px) rotate(-8deg);
+    }
+
+    .nfc-keychain-ring {
+      width: 24px;
+      height: 24px;
+      border: 4px solid #cbd5e1;
+      border-radius: 50%;
+      margin-top: -30px;
+      margin-bottom: 6px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .nfc-waves {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 2px dashed rgba(6, 182, 212, 0.7);
+      animation: pulseWave 1.2s infinite;
+      pointer-events: none;
+      display: none;
+    }
+
+    @keyframes pulseWave {
+      0% { transform: scale(0.6); opacity: 1; }
+      100% { transform: scale(1.4); opacity: 0; }
+    }
+
+    /* Speaker & Notch */
+    .phone-notch {
+      width: 130px;
+      height: 22px;
+      background: #1e293b;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      border-bottom-left-radius: 14px;
+      border-bottom-right-radius: 14px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .phone-notch::before {
+      content: '';
+      width: 40px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+
+    /* Status Bar */
+    .phone-statusbar {
+      height: 36px;
+      padding: 6px 20px 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.85);
+      z-index: 90;
+      background: rgba(10, 15, 29, 0.95);
+    }
+
+    /* Screen Container */
+    .phone-screen-container {
+      flex: 1;
+      width: 100%;
+      height: calc(100% - 36px);
+      position: relative;
+      background: #0a0f1d;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    /* Live Iframe */
+    .screen-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: none;
+      background: #0a0f1d;
+    }
+
+    .screen-iframe.active {
+      display: block;
+    }
+
+    /* Standalone Interactive Simulator Component */
+    .simulator-screen {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: #0a0f1d;
+      overflow-y: auto;
+    }
+
+    .sim-header {
+      padding: 14px 16px;
+      background: rgba(15, 23, 42, 0.85);
+      border-bottom: 1px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sim-body {
+      flex: 1;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* NFC Pulsing Radar Banner */
+    .sim-nfc-radar {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(124, 58, 237, 0.3));
+      border: 1px solid rgba(124, 58, 237, 0.4);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .sim-nfc-radar:hover {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 4px 20px rgba(6, 182, 212, 0.25);
+    }
+
+    .sim-radar-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--grad-primary);
+      margin: 0 auto 10px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
+      animation: bounceNfc 2s infinite;
+    }
+
+    @keyframes bounceNfc {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    /* Student Card Display inside Simulator */
+    .sim-student-card {
+      background: rgba(22, 30, 50, 0.9);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all 0.3s;
+    }
+
+    .sim-points-badge {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #fbbf24;
+      text-shadow: 0 2px 10px rgba(245, 158, 11, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .sim-points-btns {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .sim-btn-add {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 800;
+      padding: 12px 6px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+
+    .sim-btn-add:hover, .sim-btn-add:active {
+      background: var(--grad-primary);
+      border-color: var(--accent-indigo);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+    }
+
+    /* Channel Tabs inside Simulator */
+    .sim-channel-tabs {
+      display: flex;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 4px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-glass);
+    }
+
+    .sim-tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 6px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .sim-tab-btn.active {
+      background: rgba(99, 102, 241, 0.35);
+      color: #fff;
+    }
+
+    /* Material Items */
+    .sim-material-item {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s;
+    }
+
+    .sim-material-item:hover {
+      background: rgba(30, 41, 59, 0.8);
+      border-color: var(--accent-cyan);
+    }
+
+    .sim-mat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    /* RIGHT COLUMN: DEEP DIVE CONSOLE */
+    .console-column {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Console Tabs Bar */
+    .console-tabs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-bottom: 1px solid var(--border-glass);
+      padding-bottom: 12px;
+      overflow-x: auto;
+    }
+
+    .console-tab-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 9px 18px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .console-tab-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .console-tab-btn.active {
+      background: var(--grad-primary);
+      border-color: var(--accent-indigo);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+    }
+
+    /* Console Panels */
+    .console-panel {
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .console-panel.active {
+      display: flex;
+    }
+
+    /* Interactive NFC Simulator Deck */
+    .deck-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(16px);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .deck-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .deck-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .deck-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* NFC Keychains Grid */
+    .keychains-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .keychain-card {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .keychain-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 6px 20px rgba(6, 182, 212, 0.25);
+    }
+
+    .keychain-fob {
+      width: 44px;
+      height: 52px;
+      border-radius: 12px 12px 24px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 900;
+      font-size: 0.7rem;
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.4);
+      flex-shrink: 0;
+    }
+
+    .fob-blue { background: linear-gradient(135deg, #2563eb, #1d4ed8); border: 2px solid #60a5fa; }
+    .fob-purple { background: linear-gradient(135deg, #9333ea, #7e22ce); border: 2px solid #c084fc; }
+    .fob-emerald { background: linear-gradient(135deg, #059669, #047857); border: 2px solid #34d399; }
+    .fob-amber { background: linear-gradient(135deg, #d97706, #b45309); border: 2px solid #fbbf24; }
+
+    .keychain-meta {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .keychain-name {
+      font-weight: 800;
+      font-size: 0.88rem;
+      color: #fff;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .keychain-course {
+      font-size: 0.72rem;
+      color: var(--accent-cyan);
+      font-weight: 700;
+    }
+
+    .keychain-points {
+      font-size: 0.75rem;
+      color: var(--accent-gold);
+      font-weight: 700;
+    }
+
+    /* Comparison Table */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .compare-table th {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 12px 14px;
+      text-align: left;
+      font-weight: 800;
+      color: var(--text-main);
+      border-bottom: 1px solid var(--border-glass);
+    }
+
+    .compare-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+    }
+
+    .compare-table tr:hover td {
+      background: rgba(255, 255, 255, 0.03);
+      color: #fff;
+    }
+
+    .highlight-cell {
+      color: #34d399 !important;
+      font-weight: 800;
+    }
+
+    /* Step-by-Step Flow Graphic */
+    .flow-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .flow-step-box {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+    }
+
+    .flow-step-box.active-step {
+      border-color: var(--accent-indigo);
+      background: rgba(99, 102, 241, 0.15);
+    }
+
+    .step-number {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--grad-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 0.75rem;
+    }
+
+    .step-title {
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: #fff;
+    }
+
+    .step-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Pills & Badges */
+    .badge-pill {
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .badge-cyan { background: rgba(6, 182, 212, 0.15); color: #67e8f9; border: 1px solid rgba(6, 182, 212, 0.3); }
+    .badge-gold { background: rgba(245, 158, 11, 0.15); color: #fde68a; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-emerald { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-indigo { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.3); }
+
+    /* Interactive Log Terminal */
+    .sim-terminal {
+      background: #020617;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.78rem;
+      color: #38bdf8;
+      height: 140px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .log-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .log-time {
+      color: var(--text-dim);
+    }
+
+    .log-success { color: #4ade80; }
+    .log-warn { color: #facc15; }
+    .log-info { color: #38bdf8; }
+
+    /* Sound Switcher */
+    .sound-badge {
+      cursor: pointer;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Confetti Canvas -->
+  <canvas id="mockup-confetti"></canvas>
+
+  <!-- TOP HEADER -->
+  <header class="showcase-header">
+    <div class="brand-group">
+      <div class="brand-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M6 8.32a7.43 7.43 0 0 1 0 7.36"></path>
+          <path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58"></path>
+          <path d="M12.91 4.1a15.91 15.91 0 0 1 .01 15.8"></path>
+          <path d="M16.37 2a20.16 20.16 0 0 1 0 20"></path>
+        </svg>
+      </div>
+      <div>
+        <h1 class="brand-title">AulaTap</h1>
+        <div class="brand-sub">Explorador Interactivo en Profundidad</div>
+      </div>
+    </div>
+
+    <!-- SWITCHER DE VISTAS PRINCIPALES -->
+    <div class="switcher-container">
+      <nav class="view-switcher-bar" aria-label="Selector de vistas principales">
+        <button id="btn-view-docente" class="switcher-btn active" onclick="setMainView('docente')">
+          📱 Móvil Docente
+        </button>
+        <button id="btn-view-portal" class="switcher-btn" onclick="setMainView('portal')">
+          🎓 Portal Alumno
+        </button>
+        <button id="btn-view-admin" class="switcher-btn" onclick="setMainView('admin')">
+          💻 Panel Admin
+        </button>
+      </nav>
+
+      <!-- Toggle entre Simulador Reactivo e Iframe Flask en Vivo -->
+      <button id="btn-engine-toggle" class="mode-toggle-btn" onclick="toggleEngineMode()">
+        <span id="engine-icon">⚡</span> <span id="engine-label">Modo Simulador Ultra Rápido</span>
+      </button>
+
+      <a href="http://localhost:5000" target="_blank" class="btn-live-server" title="Abrir en pestaña completa el backend Flask">
+        <span>🌐</span> Flask :5000
+      </a>
+    </div>
+  </header>
+
+  <!-- ESCENARIO PRINCIPAL -->
+  <main class="showcase-stage">
+
+    <!-- BARRA DE CASOS DE USO Y RECORRIDOS GUIADOS -->
+    <section class="scenarios-card">
+      <div>
+        <div class="scenarios-title">
+          <span>🎯</span> Guía Rápida por Escenarios de Uso Real:
+        </div>
+        <div class="scenarios-subtitle">
+          Haz clic en cualquier hito para probar la experiencia exacta que viven docentes, alumnos y directivos:
+        </div>
+      </div>
+
+      <div class="scenario-chips-wrapper">
+        <button class="scenario-chip active" onclick="activateScenario(1)">
+          1️⃣ Asignación de Décimas NFC (Aula)
+        </button>
+        <button class="scenario-chip" onclick="activateScenario(2)">
+          2️⃣ Biblioteca Segmentada por Curso
+        </button>
+        <button class="scenario-chip" onclick="activateScenario(3)">
+          3️⃣ Consulta del Alumno (RUT o NFC)
+        </button>
+        <button class="scenario-chip" onclick="activateScenario(4)">
+          4️⃣ Carga Masiva y Cierre Semestral
+        </button>
+        <button class="scenario-chip" onclick="activateScenario(5)">
+          5️⃣ Calendario Híbrido & Pruebas
+        </button>
+      </div>
+    </section>
+
+    <!-- ARENA DE 2 COLUMNAS -->
+    <div class="arena-grid">
+
+      <!-- COLUMNA IZQUIERDA: DISPOSITIVO SMARTPHONE / TABLET CONTEXTUAL -->
+      <div class="device-column">
+        
+        <div class="device-toolbar">
+          <span id="device-mode-indicator">📱 Smartphone Docente (420px)</span>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <span class="sound-badge" onclick="testSound()" title="Probar sonido">🔊 Audio Activo</span>
+            <span class="badge-pill badge-emerald">Online</span>
+          </div>
+        </div>
+
+        <div class="device-frame-wrapper">
+          
+          <!-- Llavero NFC Físico Flotante con Animación 3D de Aproximación -->
+          <div id="nfc-keychain" class="nfc-keychain-anim" onclick="tapCurrentKeychain()">
+            <div class="nfc-keychain-ring"></div>
+            <div style="font-size: 1.1rem; margin-bottom: 2px;">📶</div>
+            <span id="keychain-anim-name">Matías S.</span>
+            <span style="font-size: 0.55rem; opacity: 0.85;">6°B NFC</span>
+          </div>
+
+          <!-- Ondas electromagnéticas emitidas por el chip -->
+          <div id="nfc-waves" class="nfc-waves"></div>
+
+          <!-- Marco del Smartphone / Tablet -->
+          <div id="phone-frame" class="phone-frame">
+            
+            <!-- Notch superior con altavoz -->
+            <div id="phone-notch" class="phone-notch"></div>
+
+            <!-- Barra de estado del móvil -->
+            <div class="phone-statusbar">
+              <span id="clock-display">15:10</span>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span>📶 5G</span>
+                <span>🔋 100%</span>
+              </div>
+            </div>
+
+            <!-- Contenedor de Pantalla -->
+            <div class="phone-screen-container">
+              
+              <!-- IFRAME EN VIVO (OPCIONAL FLASK) -->
+              <iframe id="screen-iframe" class="screen-iframe" src="http://localhost:5000/" title="AulaTap Flask Live"></iframe>
+
+              <!-- SIMULADOR INTERACTIVO STANDALONE DE ALTA FIDELIDAD -->
+              <div id="simulator-screen" class="simulator-screen">
+                
+                <!-- Cabecera del Simulador -->
+                <div class="sim-header">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 28px; height: 28px; border-radius: 8px; background: var(--grad-primary); display: flex; align-items: center; justify-content: center; font-size: 0.8rem;">
+                      ✨
+                    </div>
+                    <div>
+                      <div id="sim-app-title" style="font-size: 0.85rem; font-weight: 800;">AulaTap Docente</div>
+                      <div id="sim-app-sub" style="font-size: 0.65rem; color: var(--accent-cyan); font-weight: 700;">Profesor Antonio (Ciencias)</div>
+                    </div>
+                  </div>
+                  <button id="sim-action-btn" onclick="simHeaderAction()" style="background: rgba(255,255,255,0.08); border: 1px solid var(--border-glass); color: #fff; font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: var(--radius-pill); cursor: pointer;">
+                    📚 Biblioteca
+                  </button>
+                </div>
+
+                <!-- Cuerpo Dinámico del Simulador -->
+                <div id="sim-content-body" class="sim-body">
+                  <!-- Injected via JavaScript based on current view -->
+                </div>
+
+                <!-- Modal Flotante Interactivo en el Simulador Móvil -->
+                <div id="sim-modal-overlay" style="display: none; position: absolute; inset: 0; background: rgba(3,7,18,0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 300; flex-direction: column; justify-content: flex-end;">
+                  <div id="sim-modal-content" style="background: #0f172a; border-top: 1px solid var(--border-glass); border-radius: 24px 24px 0 0; padding: 16px; max-height: 88%; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.8);">
+                    <!-- Dynamic modal content injected by openSimEvalModal() -->
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div style="font-size: 0.75rem; color: var(--text-dim); text-align: center;">
+          💡 Tip: Haz clic en cualquiera de los llaveros de la derecha para simular el acercamiento físico instantáneo.
+        </div>
+
+      </div>
+
+      <!-- COLUMNA DERECHA: CONSOLA DE EXPLORACIÓN EN PROFUNDIDAD -->
+      <div class="console-column">
+
+        <!-- Selector de pestañas de la consola -->
+        <div class="console-tabs" role="tablist">
+          <button class="console-tab-btn active" onclick="setConsoleTab('deck')">
+            <span>📶</span> Simulador de Llaveros NFC
+          </button>
+          <button class="console-tab-btn" onclick="setConsoleTab('flow')">
+            <span>🔄</span> Flujo Operativo en el Aula
+          </button>
+          <button class="console-tab-btn" onclick="setConsoleTab('specs')">
+            <span>⚡</span> Web NFC vs QR & Hardware
+          </button>
+          <button class="console-tab-btn" onclick="setConsoleTab('pillars')">
+            <span>🏛️</span> Los 4 Pilares Admin
+          </button>
+          <button class="console-tab-btn" onclick="setConsoleTab('calendar')">
+            <span>📅</span> Calendario & Evaluaciones
+          </button>
+        </div>
+
+        <!-- PANEL 1: SIMULADOR DE LLAVEROS NFC -->
+        <div id="panel-deck" class="console-panel active">
+          
+          <div class="deck-card">
+            <div class="deck-header">
+              <div>
+                <h3 class="deck-title"><span>🏷️</span> Llaveros NFC de Alumnos Preconfigurados</h3>
+                <p class="deck-desc">
+                  Haz clic en un llavero físico para simular el toque en el lector NFC del teléfono. Observa la velocidad instantánea (&lt;0.2s), el audio de confirmación y el incremento de décimas.
+                </p>
+              </div>
+              <span class="badge-pill badge-cyan">Tokens NTAG213 / Mifare</span>
+            </div>
+
+            <div class="keychains-grid">
+              
+              <!-- Alumno 1 -->
+              <div class="keychain-card" onclick="simulateStudentTap(0)">
+                <div class="keychain-fob fob-blue">
+                  <span>6°B</span>
+                  <span style="font-size: 0.5rem; opacity: 0.8;">#01</span>
+                </div>
+                <div class="keychain-meta">
+                  <div class="keychain-name">Matías Silva</div>
+                  <div class="keychain-course">6° Básico B</div>
+                  <div class="keychain-points"><span id="deck-pts-0">8</span> Décimas (+0.8)</div>
+                </div>
+              </div>
+
+              <!-- Alumno 2 -->
+              <div class="keychain-card" onclick="simulateStudentTap(1)">
+                <div class="keychain-fob fob-purple">
+                  <span>6°B</span>
+                  <span style="font-size: 0.5rem; opacity: 0.8;">#02</span>
+                </div>
+                <div class="keychain-meta">
+                  <div class="keychain-name">Sofía Castro</div>
+                  <div class="keychain-course">6° Básico B</div>
+                  <div class="keychain-points"><span id="deck-pts-1">12</span> Décimas (+1.2)</div>
+                </div>
+              </div>
+
+              <!-- Alumno 3 -->
+              <div class="keychain-card" onclick="simulateStudentTap(2)">
+                <div class="keychain-fob fob-emerald">
+                  <span>7°A</span>
+                  <span style="font-size: 0.5rem; opacity: 0.8;">#03</span>
+                </div>
+                <div class="keychain-meta">
+                  <div class="keychain-name">Lucas Morales</div>
+                  <div class="keychain-course">7° Básico A</div>
+                  <div class="keychain-points"><span id="deck-pts-2">5</span> Décimas (+0.5)</div>
+                </div>
+              </div>
+
+              <!-- Alumno 4 -->
+              <div class="keychain-card" onclick="simulateStudentTap(3)">
+                <div class="keychain-fob fob-amber">
+                  <span>7°A</span>
+                  <span style="font-size: 0.5rem; opacity: 0.8;">#04</span>
+                </div>
+                <div class="keychain-meta">
+                  <div class="keychain-name">Valentina Rojas</div>
+                  <div class="keychain-course">7° Básico A</div>
+                  <div class="keychain-points"><span id="deck-pts-3">15</span> Décimas (+1.5)</div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Terminal de Registro en Tiempo Real -->
+            <div style="margin-top: 10px;">
+              <div style="font-size: 0.8rem; font-weight: 700; margin-bottom: 6px; display: flex; justify-content: space-between;">
+                <span>📡 Terminal de Eventos Web NFC en Vivo:</span>
+                <span style="color: var(--text-dim); cursor: pointer;" onclick="clearLogs()">Limpiar log</span>
+              </div>
+              <div id="sim-terminal" class="sim-terminal">
+                <div class="log-line">
+                  <span class="log-time">[15:10:02]</span>
+                  <span class="log-info">NDEFReader inicializado con éxito. Modo escucha activo en frecuencia 13.56 MHz.</span>
+                </div>
+                <div class="log-line">
+                  <span class="log-time">[15:10:05]</span>
+                  <span class="log-success">Listo para aproximar tokens físicos o consultar mediante RUT.</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Tarjeta de Beneficios de la Biblioteca de Canales -->
+          <div class="deck-card">
+            <h4 class="deck-title"><span>📚</span> Biblioteca Segmentada por Canales y Cursos</h4>
+            <p class="deck-desc">
+              Resuelve el caos de los grupos de WhatsApp y correos escolares:
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 4px;">
+              <div style="background: rgba(15,23,42,0.6); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-glass);">
+                <div style="color: #67e8f9; font-weight: 800; font-size: 0.85rem; margin-bottom: 4px;">📂 Canal: Guías y Material</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">PDFs, guías de estudio y rúbricas subidas por el docente. Filtrado estricto por el curso del alumno.</div>
+              </div>
+              <div style="background: rgba(15,23,42,0.6); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-glass);">
+                <div style="color: #a5b4fc; font-weight: 800; font-size: 0.85rem; margin-bottom: 4px;">📝 Canal: Clases del Día a Día</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Registro de contenidos vistos en la clase, tareas asignadas y fecha pedagógica para quienes faltaron.</div>
+              </div>
+              <div style="background: rgba(15,23,42,0.6); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-glass);">
+                <div style="color: #fbbf24; font-weight: 800; font-size: 0.85rem; margin-bottom: 4px;">📢 Canal: Avisos Importantes</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Recordatorios de pruebas, materiales para laboratorios y comunicados oficiales directos.</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PANEL 2: FLUJO OPERATIVO EN EL AULA -->
+        <div id="panel-flow" class="console-panel">
+          <div class="deck-card">
+            <h3 class="deck-title"><span>🔄</span> Dinámica de Clase: Cero Pérdida de Tiempo</h3>
+            <p class="deck-desc">
+              Un docente promedio gasta entre 10 y 15 minutos por clase anotando puntos en papel, buscando libretas o pasando lista. AulaTap reduce el proceso a menos de 2 segundos por interacción:
+            </p>
+
+            <div class="flow-steps">
+              <div class="flow-step-box active-step">
+                <div class="step-number">1</div>
+                <div class="step-title">Pregunta o Desafío</div>
+                <div class="step-desc">El docente lanza una pregunta en pizarra o premia la participación y trabajo en equipo.</div>
+              </div>
+
+              <div class="flow-step-box active-step">
+                <div class="step-number">2</div>
+                <div class="step-title">Toque NFC Instantáneo</div>
+                <div class="step-desc">El alumno acerca su llavero al teléfono del docente. No requiere desbloquear cámara ni buscar nombres.</div>
+              </div>
+
+              <div class="flow-step-box active-step">
+                <div class="step-number">3</div>
+                <div class="step-title">Feedback Sensorial</div>
+                <div class="step-desc">El teléfono emite un chime agudo agradable y vibra, confirmando la identidad y puntos al instante.</div>
+              </div>
+
+              <div class="flow-step-box active-step">
+                <div class="step-number">4</div>
+                <div class="step-title">Auto-Consulta Familiar</div>
+                <div class="step-desc">El alumno o apoderado consulta sus décimas y descarga sus guías desde el portal con su RUT sin apps pesadas.</div>
+              </div>
+            </div>
+
+            <!-- Gráfico de Comparación de Tiempo -->
+            <div style="background: rgba(15,23,42,0.6); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 18px; margin-top: 10px;">
+              <div style="font-weight: 800; font-size: 0.9rem; margin-bottom: 12px; color: #fff;">
+                ⏱️ Tiempo Invertido por Alumno en Sala de Clases:
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px;">
+                    <span>Método Tradicional (Papel / Cuaderno de Notas)</span>
+                    <span style="color: #f87171; font-weight: 700;">45.0 seg</span>
+                  </div>
+                  <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.06); border-radius: 5px; overflow: hidden;">
+                    <div style="width: 90%; height: 100%; background: #ef4444; border-radius: 5px;"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px;">
+                    <span>Código QR (Enfoque de cámara, iluminación, reflejos)</span>
+                    <span style="color: #fbbf24; font-weight: 700;">4.8 seg</span>
+                  </div>
+                  <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.06); border-radius: 5px; overflow: hidden;">
+                    <div style="width: 35%; height: 100%; background: #f59e0b; border-radius: 5px;"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px;">
+                    <span style="color: #6ee7b7; font-weight: 800;">AulaTap Web NFC (Toque directo por radiofrecuencia)</span>
+                    <span style="color: #34d399; font-weight: 800;">0.2 seg (24x más veloz)</span>
+                  </div>
+                  <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.06); border-radius: 5px; overflow: hidden;">
+                    <div style="width: 5%; height: 100%; background: #10b981; border-radius: 5px; box-shadow: 0 0 10px #10b981;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PANEL 3: COMPARATIVA WEB NFC VS QR & HARDWARE -->
+        <div id="panel-specs" class="console-panel">
+          <div class="deck-card">
+            <h3 class="deck-title"><span>⚡</span> Comparativa Técnica de Tecnologías Escolares</h3>
+            <p class="deck-desc">
+              Por qué Web NFC y Progressive Web Apps superan con creces a las aplicaciones nativas y a los códigos QR:
+            </p>
+
+            <table class="compare-table">
+              <thead>
+                <tr>
+                  <th>Criterio</th>
+                  <th>AulaTap (Web NFC)</th>
+                  <th>Códigos QR</th>
+                  <th>App Nativa (PlayStore)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Instalación</strong></td>
+                  <td class="highlight-cell">PWA en 1 clic (sin tiendas)</td>
+                  <td>Requiere lector / web</td>
+                  <td>Descarga de 80MB+ en Store</td>
+                </tr>
+                <tr>
+                  <td><strong>Lectura en Oscuridad / Luz</strong></td>
+                  <td class="highlight-cell">100% Inmune (Ondas RF)</td>
+                  <td>Falla con poca luz/reflejos</td>
+                  <td>Depende de la cámara</td>
+                </tr>
+                <tr>
+                  <td><strong>Desgaste del Soporte</strong></td>
+                  <td class="highlight-cell">Llavero sellado e impermeable</td>
+                  <td>Papel o sticker que se arruga</td>
+                  <td>N/A</td>
+                </tr>
+                <tr>
+                  <td><strong>Costo de Implementación</strong></td>
+                  <td class="highlight-cell">Llavero NTAG213 (~$250 CLP)</td>
+                  <td>Impresión constante</td>
+                  <td>Cuentas de desarrollador anuales</td>
+                </tr>
+                <tr>
+                  <td><strong>Privacidad de Datos</strong></td>
+                  <td class="highlight-cell">El token solo tiene un ID ciego</td>
+                  <td>El QR suele exponer texto plano</td>
+                  <td>Acceso a permisos invasivos</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div style="background: rgba(99, 102, 241, 0.12); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: var(--radius-md); padding: 14px; margin-top: 8px;">
+              <div style="font-weight: 800; color: #a5b4fc; font-size: 0.85rem; margin-bottom: 4px;">
+                🔒 Cumplimiento de Privacidad Escolar:
+              </div>
+              <div style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4;">
+                Los llaveros NFC no almacenan notas, nombres ni datos sensibles. Únicamente contienen un identificador serial único (UID) de fábrica. Toda la lógica de negocio y notas reside de forma segura en la base de datos institucional protegida por sesión docente.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL 4: LOS 4 PILARES ADMINISTRATIVOS -->
+        <div id="panel-pillars" class="console-panel">
+          <div class="deck-card">
+            <h3 class="deck-title"><span>🏛️</span> Módulo de Administración Completo</h3>
+            <p class="deck-desc">
+              Diseñado para el equipo directivo, inspectores generales y administradores de TI escolar:
+            </p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;">
+              
+              <!-- Pilar 1 -->
+              <div style="background: rgba(15,23,42,0.7); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 16px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                  <span style="font-weight: 800; color: #67e8f9; font-size: 0.95rem;">Pilar 1: Alumnos y Cursos</span>
+                  <span class="badge-pill badge-cyan">Excel / CSV</span>
+                </div>
+                <div style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4;">
+                  Carga masiva de listas de curso con mapeo inteligente de cabeceras. Edición de RUT, curso y asignación o cambio de llavero NFC en 1 segundo.
+                </div>
+                <button onclick="previewAdminFeature('import')" style="margin-top: 10px; background: rgba(6,182,212,0.15); border: 1px solid rgba(6,182,212,0.3); color: #67e8f9; font-weight: 700; font-size: 0.75rem; padding: 6px 10px; border-radius: var(--radius-sm); cursor: pointer; width: 100%;">
+                  Ver Importador Masivo
+                </button>
+              </div>
+
+              <!-- Pilar 2 -->
+              <div style="background: rgba(15,23,42,0.7); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 16px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                  <span style="font-weight: 800; color: #fbbf24; font-size: 0.95rem;">Pilar 2: Cierre Semestral</span>
+                  <span class="badge-pill badge-gold">Auditable</span>
+                </div>
+                <div style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4;">
+                  Cierre seguro de periodo (1er / 2do Semestre). Respaldo automático a Excel de todas las décimas antes de reiniciar a 0 puntos por curso o colegio completo.
+                </div>
+                <button onclick="previewAdminFeature('close')" style="margin-top: 10px; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); color: #fbbf24; font-weight: 700; font-size: 0.75rem; padding: 6px 10px; border-radius: var(--radius-sm); cursor: pointer; width: 100%;">
+                  Simular Cierre de Semestre
+                </button>
+              </div>
+
+              <!-- Pilar 3 -->
+              <div style="background: rgba(15,23,42,0.7); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 16px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                  <span style="font-weight: 800; color: #a5b4fc; font-size: 0.95rem;">Pilar 3: Docentes y Roles</span>
+                  <span class="badge-pill badge-indigo">RBAC</span>
+                </div>
+                <div style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4;">
+                  Separación estricta de permisos entre rol <code>docente</code> (aula y biblioteca) y <code>admin</code> (gestión de usuarios, reseteos y bases de datos).
+                </div>
+                <button onclick="previewAdminFeature('users')" style="margin-top: 10px; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); color: #a5b4fc; font-weight: 700; font-size: 0.75rem; padding: 6px 10px; border-radius: var(--radius-sm); cursor: pointer; width: 100%;">
+                  Ver Gestión de Docentes
+                </button>
+              </div>
+
+              <!-- Pilar 4 -->
+              <div style="background: rgba(15,23,42,0.7); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 16px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                  <span style="font-weight: 800; color: #6ee7b7; font-size: 0.95rem;">Pilar 4: Canales y Backup</span>
+                  <span class="badge-pill badge-emerald">1-Clic</span>
+                </div>
+                <div style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4;">
+                  Creación de canales a medida (ej: Olimpiadas, Robótica, Guías) y descarga en 1 clic de la base de datos SQLite integra (.db) con métricas de almacenamiento.
+                </div>
+                <button onclick="previewAdminFeature('backup')" style="margin-top: 10px; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; font-weight: 700; font-size: 0.75rem; padding: 6px 10px; border-radius: var(--radius-sm); cursor: pointer; width: 100%;">
+                  Descargar Respaldo SQLite
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PANEL 5: CALENDARIO HÍBRIDO & EVALUACIONES -->
+        <div id="panel-calendar" class="console-panel">
+          <div class="deck-card">
+            <div class="deck-header">
+              <div>
+                <h3 class="deck-title"><span>📅</span> Calendario Híbrido & Evaluaciones Formativas</h3>
+                <p class="deck-desc">
+                  Articulación directa entre las décimas ganadas en el aula y las metas sumativas. Cuadrícula mensual glassmorphic interactiva, agenda con cuenta regresiva en días y límite de décimas canjeables.
+                </p>
+              </div>
+              <span class="badge-pill badge-cyan">Nuevo Módulo</span>
+            </div>
+
+            <!-- Grilla de Características Clave -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 14px;">
+              
+              <!-- Característica 1 -->
+              <div style="background: rgba(15,23,42,0.7); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 14px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                  <span style="font-weight: 800; color: #a5b4fc; font-size: 0.88rem;">1. Enfoque Híbrido</span>
+                  <span class="badge-pill badge-cyan">UX Móvil</span>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+                  Mini-calendario mensual superior interactivo con puntos de color según el tipo de prueba + timeline inferior con conteo regresivo ("En 4 días", "Mañana", "Hoy").
+                </div>
+              </div>
+
+              <!-- Característica 2 -->
+              <div style="background: rgba(15,23,42,0.7); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 14px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                  <span style="font-weight: 800; color: #fde047; font-size: 0.88rem;">2. Gamificación Formativa</span>
+                  <span class="badge-pill badge-amber">Motivación</span>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+                  Cada prueba tiene una meta máxima de décimas canjeables (ej: "Hasta +5 décimas"). Los alumnos visualizan una meta tangible para su esfuerzo diario en el aula.
+                </div>
+              </div>
+
+              <!-- Característica 3 -->
+              <div style="background: rgba(15,23,42,0.7); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 14px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                  <span style="font-weight: 800; color: #6ee7b7; font-size: 0.88rem;">3. Segmentación por Curso</span>
+                  <span class="badge-pill badge-emerald">6°B / 7°A</span>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+                  Filtro estricto por curso en el panel docente y visualización exclusiva de su nivel en el Portal del Alumno (con soporte para eventos transversales "TODOS").
+                </div>
+              </div>
+
+              <!-- Característica 4 -->
+              <div style="background: rgba(15,23,42,0.7); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 14px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                  <span style="font-weight: 800; color: #7dd3fc; font-size: 0.88rem;">4. Student Spotlight</span>
+                  <span class="badge-pill badge-cyan">Countdown</span>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+                  Banner destacado en el Student Hub con reloj de proximidad e indicador de temario para que alumnos y apoderados descarguen el material de estudio directo.
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Acciones Rápidas del Simulador de Calendario -->
+            <div style="margin-top: 16px; background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3); border-radius: var(--radius-md); padding: 14px;">
+              <div style="font-weight: 800; font-size: 0.82rem; color: #fff; margin-bottom: 8px;">
+                ⚡ Probar Interacciones de Calendario en el Simulador:
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button onclick="previewCalendarDocente()" style="background: var(--grad-primary); border: none; color: #fff; font-weight: 700; font-size: 0.75rem; padding: 7px 14px; border-radius: var(--radius-pill); cursor: pointer;">
+                  📱 Ver Calendario en Móvil Docente
+                </button>
+                <button onclick="previewCalendarPortal()" style="background: rgba(6,182,212,0.2); border: 1px solid var(--accent-cyan); color: #67e8f9; font-weight: 700; font-size: 0.75rem; padding: 7px 14px; border-radius: var(--radius-pill); cursor: pointer;">
+                  🎓 Ver Spotlight en Portal Alumno
+                </button>
+                <button onclick="openSimEvalModal()" style="background: rgba(139,92,246,0.25); border: 1px solid var(--accent-purple); color: #c4b5fd; font-weight: 700; font-size: 0.75rem; padding: 7px 14px; border-radius: var(--radius-pill); cursor: pointer;">
+                  📝 Abrir Formulario Agendar
+                </button>
+                <button onclick="addQuickTestEvaluacion()" style="background: rgba(245,158,11,0.2); border: 1px solid var(--accent-gold); color: #fbbf24; font-weight: 700; font-size: 0.75rem; padding: 7px 14px; border-radius: var(--radius-pill); cursor: pointer;">
+                  ✨ Agendar Rápido (+5 Décimas)
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- JAVASCRIPT: MOTOR DEL SHOWCASE Y SIMULADOR -->
+  <script>
+    // ESTADO GLOBAL DEL SHOWCASE
+    const ShowcaseState = {
+      currentView: 'docente', // 'docente' | 'portal' | 'admin'
+      engineMode: 'simulator', // 'simulator' | 'live'
+      activeStudentIndex: 0,
+      students: [
+        { name: "Matías Silva", rut: "21.345.678-9", course: "6° Básico B", uid: "04:a1:b2:c3:d4:e5:01", points: 8, color: "fob-blue" },
+        { name: "Sofía Castro", rut: "21.987.654-3", course: "6° Básico B", uid: "04:a1:b2:c3:d4:e5:02", points: 12, color: "fob-purple" },
+        { name: "Lucas Morales", rut: "20.123.456-7", course: "7° Básico A", uid: "04:a1:b2:c3:d4:e5:03", points: 5, color: "fob-emerald" },
+        { name: "Valentina Rojas", rut: "20.654.321-0", course: "7° Básico A", uid: "04:a1:b2:c3:d4:e5:04", points: 15, color: "fob-amber" }
+      ],
+      portalChannel: 'guias', // 'guias' | 'clases' | 'avisos' | 'evaluaciones'
+      docenteTab: 'aula', // 'aula' | 'calendario'
+      selectedCalDate: null,
+      calYear: 2026,
+      calMonth: 9, // Octubre (0 = Enero, ..., 9 = Octubre)
+      showEvalModal: false,
+      materials: [
+        { id: 1, course: '6° Básico B', canal: 'guias', title: 'Guía N°3: La Célula y sus Organelos', type: 'archivo', icon: '📄', date: '2026-09-24', ext: 'PDF' },
+        { id: 2, course: '6° Básico B', canal: 'guias', title: 'Rúbrica Proyecto Modelo Celular 3D', type: 'archivo', icon: '📊', date: '2026-09-20', ext: 'PDF' },
+        { id: 3, course: '6° Básico B', canal: 'clases', title: 'Clase 12: Mitosis vs Meiosis (Resumen)', type: 'texto', icon: '📝', date: '2026-09-26', ext: 'DOC' },
+        { id: 4, course: '6° Básico B', canal: 'avisos', title: 'Recordatorio: Traer plastilina el viernes', type: 'texto', icon: '📢', date: '2026-09-27', ext: 'AVISO' },
+        { id: 5, course: '7° Básico A', canal: 'guias', title: 'Guía N°1: Leyes de Newton y Fuerzas', type: 'archivo', icon: '📄', date: '2026-09-22', ext: 'PDF' },
+        { id: 6, course: '7° Básico A', canal: 'clases', title: 'Clase 08: Diagrama de Cuerpo Libre', type: 'texto', icon: '📝', date: '2026-09-25', ext: 'DOC' }
+      ],
+      evaluaciones: [
+        { id: 1, course: '6° Básico B', title: 'Prueba Sumativa N° 2: Fracciones y Decimales', type: 'Prueba Sumativa', date: '2026-10-02', time: '08:30', max_decimas: 5, desc: 'Suma y resta de fracciones con distinto denominador, números mixtos y resolución de problemas.', days_left: 4 },
+        { id: 2, course: '6° Básico B', title: 'Control Acumulativo: Operaciones Combinadas', type: 'Control Corto', date: '2026-10-09', time: '10:15', max_decimas: 3, desc: 'Prioridad de operaciones PAPOMUDAS y 5 ejercicios rápidos.', days_left: 11 },
+        { id: 3, course: '7° Básico A', title: 'Evaluación Parcial: Ecuaciones de 1er Grado', type: 'Prueba Sumativa', date: '2026-10-04', time: '11:45', max_decimas: 5, desc: 'Lenguaje algebraico, reducción de términos semejantes y ecuaciones con enteros.', days_left: 6 },
+        { id: 4, course: 'TODOS', title: 'Feria Científica y Matemática Escolar', type: 'Trabajo Práctico', date: '2026-10-14', time: '09:00', max_decimas: 8, desc: 'Presentación de maquetas, proyectos y experimentos grupales.', days_left: 16 }
+      ]
+    };
+
+    // SINTETIZADOR DE AUDIO WEB AUDIO API
+    const AudioEngine = {
+      ctx: null,
+      init() {
+        if (!this.ctx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) this.ctx = new AC();
+        }
+      },
+      playNfcTap() {
+        this.init();
+        if (!this.ctx) return;
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, this.ctx.currentTime); // A5
+        gain.gain.setValueAtTime(0.18, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.12);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.12);
+
+        setTimeout(() => {
+          const osc2 = this.ctx.createOscillator();
+          const gain2 = this.ctx.createGain();
+          osc2.type = 'triangle';
+          osc2.frequency.setValueAtTime(1318.5, this.ctx.currentTime); // E6
+          gain2.gain.setValueAtTime(0.2, this.ctx.currentTime);
+          gain2.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.18);
+          osc2.connect(gain2);
+          gain2.connect(this.ctx.destination);
+          osc2.start();
+          osc2.stop(this.ctx.currentTime + 0.18);
+        }, 70);
+      },
+      playPointAdd() {
+        this.init();
+        if (!this.ctx) return;
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, this.ctx.currentTime); // C5
+        osc.frequency.exponentialRampToValueAtTime(1046.5, this.ctx.currentTime + 0.2); // C6
+        gain.gain.setValueAtTime(0.18, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.2);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.2);
+      }
+    };
+
+    // CONFETTI PARTICLES ENGINE
+    const ConfettiEngine = {
+      canvas: document.getElementById('mockup-confetti'),
+      ctx: null,
+      particles: [],
+      animating: false,
+      init() {
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+      },
+      resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+      },
+      burst(x, y) {
+        const colors = ['#06b6d4', '#8b5cf6', '#fbbf24', '#ec4899', '#10b981', '#3b82f6'];
+        for (let i = 0; i < 65; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = Math.random() * 9 + 4;
+          this.particles.push({
+            x: x || window.innerWidth / 2,
+            y: y || window.innerHeight / 2,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - 3,
+            size: Math.random() * 7 + 3,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            life: 1
+          });
+        }
+        if (!this.animating) this.loop();
+      },
+      loop() {
+        this.animating = true;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.16;
+          p.life -= 0.016;
+          this.ctx.fillStyle = p.color;
+          this.ctx.globalAlpha = Math.max(0, p.life);
+          this.ctx.fillRect(p.x, p.y, p.size, p.size);
+        });
+        this.particles = this.particles.filter(p => p.life > 0);
+        if (this.particles.length > 0) {
+          requestAnimationFrame(() => this.loop());
+        } else {
+          this.animating = false;
+        }
+      }
+    };
+
+    // RENDERIZADO DEL SIMULADOR SEGÚN LA VISTA
+    function renderSimulator() {
+      const container = document.getElementById('sim-content-body');
+      const appTitle = document.getElementById('sim-app-title');
+      const appSub = document.getElementById('sim-app-sub');
+      const actionBtn = document.getElementById('sim-action-btn');
+      const currentStu = ShowcaseState.students[ShowcaseState.activeStudentIndex];
+
+      if (ShowcaseState.currentView === 'docente') {
+        appTitle.textContent = "AulaTap Docente";
+        appSub.textContent = "Profesor Antonio • Ciencias";
+        actionBtn.style.display = 'block';
+        actionBtn.textContent = ShowcaseState.docenteTab === 'aula' ? "📅 Calendario" : "🎯 Aula NFC";
+
+        // Sub-tabs para conmutar entre Aula NFC y Calendario de Evaluaciones
+        const subTabsHtml = `
+          <div style="display: flex; gap: 4px; background: rgba(0,0,0,0.4); padding: 3px; border-radius: 9999px; margin-bottom: 10px; border: 1px solid var(--border-glass);">
+            <button class="switcher-btn ${ShowcaseState.docenteTab === 'aula' ? 'active' : ''}" style="padding: 5px 12px; font-size: 0.72rem; flex: 1; justify-content: center;" onclick="setDocenteTab('aula')">
+              🎯 Evaluación Aula
+            </button>
+            <button class="switcher-btn ${ShowcaseState.docenteTab === 'calendario' ? 'active' : ''}" style="padding: 5px 12px; font-size: 0.72rem; flex: 1; justify-content: center;" onclick="setDocenteTab('calendario')">
+              📅 Pruebas (${ShowcaseState.evaluaciones.length})
+            </button>
+          </div>
+        `;
+
+        if (ShowcaseState.docenteTab === 'aula') {
+          container.innerHTML = `
+            ${subTabsHtml}
+
+            <!-- Radar NFC -->
+            <div class="sim-nfc-radar" onclick="triggerCurrentNfcTap()">
+              <div class="sim-radar-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5">
+                  <path d="M6 8.32a7.43 7.43 0 0 1 0 7.36"></path>
+                  <path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58"></path>
+                  <path d="M12.91 4.1a15.91 15.91 0 0 1 .01 15.8"></path>
+                  <path d="M16.37 2a20.16 20.16 0 0 1 0 20"></path>
+                </svg>
+              </div>
+              <div style="font-weight: 800; font-size: 0.95rem; color: #fff;">Lector Web NFC Listo</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">
+                Acerca el llavero de un alumno al reverso o haz clic aquí
+              </div>
+            </div>
+
+            <!-- Ficha del Alumno Activo -->
+            <div class="sim-student-card">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                  <span class="badge-pill badge-cyan">${currentStu.course}</span>
+                  <h2 style="font-size: 1.25rem; font-weight: 900; color: #fff; margin-top: 4px;">${currentStu.name}</h2>
+                  <div style="font-size: 0.72rem; color: var(--text-muted);">RUT: ${currentStu.rut} • NFC: ${currentStu.uid.substring(0, 14)}...</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.06); padding: 4px 8px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; color: #34d399;">
+                  ✓ Identificado
+                </div>
+              </div>
+
+              <!-- Contador de Décimas -->
+              <div style="background: rgba(0,0,0,0.3); border-radius: 14px; padding: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.06);">
+                <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Décimas Acumuladas</div>
+                <div class="sim-points-badge">
+                  <span>⭐</span> <span id="sim-points-val">${currentStu.points}</span>
+                  <span style="font-size: 1rem; color: var(--text-muted); font-weight: 600;">(+${(currentStu.points * 0.1).toFixed(1)} en nota)</span>
+                </div>
+              </div>
+
+              <!-- Botones de Acción Rápida -->
+              <div class="sim-points-btns">
+                <button class="sim-btn-add" onclick="addPoints(1)">
+                  <span>+1</span>
+                  <span style="font-size: 0.65rem; color: var(--text-muted);">Aporte</span>
+                </button>
+                <button class="sim-btn-add" onclick="addPoints(2)">
+                  <span>+2</span>
+                  <span style="font-size: 0.65rem; color: var(--text-muted);">Desafío</span>
+                </button>
+                <button class="sim-btn-add" onclick="addPoints(3)">
+                  <span>+3</span>
+                  <span style="font-size: 0.65rem; color: var(--text-muted);">Proyecto</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Historial Reciente de Aula -->
+            <div style="background: rgba(15,23,42,0.6); border: 1px solid var(--border-glass); border-radius: 14px; padding: 12px;">
+              <div style="font-weight: 800; font-size: 0.8rem; color: var(--text-main); margin-bottom: 8px; display: flex; justify-content: space-between;">
+                <span>🕒 Registro de Clase de Hoy:</span>
+                <span style="font-size: 0.7rem; color: var(--accent-cyan);">Semestre 1</span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.75rem;">
+                <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+                  <span>15:08 • ${currentStu.name}</span>
+                  <span style="color: #34d399; font-weight: 700;">+1 Décima (Participación)</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+                  <span>14:52 • Sofía Castro</span>
+                  <span style="color: #34d399; font-weight: 700;">+2 Décimas (Pizarra)</span>
+                </div>
+              </div>
+            </div>
+          `;
+        } else {
+          // VISTA CALENDARIO DOCENTE
+          let evs = ShowcaseState.evaluaciones;
+          if (ShowcaseState.selectedCalDate) {
+            evs = evs.filter(e => e.date === ShowcaseState.selectedCalDate);
+          }
+
+          container.innerHTML = `
+            ${subTabsHtml}
+
+            <!-- Mini Calendario Cuadrícula Dinámico -->
+            ${renderCalendarGridHtml(ShowcaseState.evaluaciones, true, true)}
+
+            <!-- Lista de Pruebas Agendadas -->
+            <div style="font-size: 0.75rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+              <span>${ShowcaseState.selectedCalDate ? `Pruebas del ${ShowcaseState.selectedCalDate}:` : 'Próximas Pruebas & Evaluaciones:'}</span>
+              <span style="font-size: 0.68rem; color: var(--accent-cyan); font-weight: 700;">${evs.length} agendada(s)</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              ${evs.length > 0 ? evs.map(ev => `
+                <div style="background: rgba(15,23,42,0.7); border: 1px solid var(--border-glass); border-left: 3px solid ${ev.type.includes('Control') ? '#fbbf24' : (ev.type.includes('Trabajo') ? '#34d399' : '#818cf8')}; border-radius: 12px; padding: 10px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <span style="font-size: 0.65rem; font-weight: 800; color: #a5b4fc; text-transform: uppercase;">${ev.type}</span>
+                    <span style="font-size: 0.68rem; font-weight: 800; padding: 1px 6px; border-radius: 9999px; background: rgba(239,68,68,0.2); color: #fca5a5;">En ${ev.days_left} días</span>
+                  </div>
+                  <div style="font-size: 0.82rem; font-weight: 800; color: #fff;">${ev.title}</div>
+                  <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 2px;">
+                    📅 ${ev.date} • ⏰ ${ev.time} hrs • <span class="badge-pill badge-cyan">${ev.course}</span>
+                  </div>
+                  <div style="font-size: 0.7rem; color: #cbd5e1; background: rgba(0,0,0,0.25); padding: 5px 8px; border-radius: 6px; margin-top: 5px;">
+                    <strong>Temario:</strong> ${ev.desc}
+                  </div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 0.68rem; color: var(--accent-gold); font-weight: 700;">
+                    <span>⭐ Hasta +${ev.max_decimas} décimas canjeables</span>
+                    <button onclick="deleteSimEvaluacion(${ev.id})" style="background: none; border: none; color: #f87171; cursor: pointer; font-size: 0.75rem;" title="Eliminar">🗑️</button>
+                  </div>
+                </div>
+              `).join('') : `
+                <div style="text-align: center; padding: 20px; color: var(--text-dim); font-size: 0.78rem; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px dashed var(--border-glass);">
+                  No hay evaluaciones registradas para esta fecha.
+                </div>
+              `}
+            </div>
+          `;
+        }
+
+      } else if (ShowcaseState.currentView === 'portal') {
+        appTitle.textContent = "Portal del Estudiante";
+        appSub.textContent = `${currentStu.name} • ${currentStu.course}`;
+        actionBtn.style.display = 'block';
+        actionBtn.textContent = "Salir";
+
+        // Próxima evaluación para el curso del alumno
+        const nextEv = ShowcaseState.evaluaciones.find(e => e.course === currentStu.course || e.course === 'TODOS');
+
+        // Filtrar materiales o evaluaciones
+        const courseMaterials = ShowcaseState.materials.filter(m => m.course === currentStu.course && m.canal === ShowcaseState.portalChannel);
+        const courseEvaluaciones = ShowcaseState.evaluaciones.filter(e => e.course === currentStu.course || e.course === 'TODOS');
+
+        container.innerHTML = `
+          <!-- Cabecera de Alumno -->
+          <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(6, 182, 212, 0.25)); border: 1px solid rgba(99,102,241,0.4); border-radius: 16px; padding: 14px; margin-bottom: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <span class="badge-pill badge-cyan">${currentStu.course}</span>
+                <div style="font-size: 1.15rem; font-weight: 900; color: #fff; margin-top: 4px;">${currentStu.name}</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted);">RUT: ${currentStu.rut}</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 1.8rem; font-weight: 900; color: #fbbf24;">⭐ ${currentStu.points}</div>
+                <div style="font-size: 0.7rem; color: #6ee7b7; font-weight: 700;">+${(currentStu.points * 0.1).toFixed(1)} en nota final</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SPOTLIGHT DE PRÓXIMA EVALUACIÓN -->
+          ${nextEv ? `
+            <div style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.35), rgba(6, 182, 212, 0.25)); border: 1px solid rgba(99,102,241,0.45); border-radius: 14px; padding: 12px; margin-bottom: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <span style="font-size: 0.68rem; font-weight: 800; color: var(--accent-cyan); text-transform: uppercase;">⏳ Próxima Evaluación</span>
+                <span style="font-size: 0.68rem; font-weight: 800; padding: 2px 7px; border-radius: 9999px; background: rgba(239,68,68,0.25); color: #fca5a5; border: 1px solid rgba(239,68,68,0.4);">En ${nextEv.days_left} días</span>
+              </div>
+              <div style="font-size: 0.88rem; font-weight: 800; color: #fff;">${nextEv.title}</div>
+              <div style="font-size: 0.7rem; color: #cbd5e1; margin-top: 3px;">
+                📅 ${nextEv.date} • ⏰ ${nextEv.time} hrs • ⭐ Puedes canjear hasta +${nextEv.max_decimas} décimas
+              </div>
+              <div style="margin-top: 6px; text-align: right;">
+                <button onclick="setPortalChannel('evaluaciones')" style="background: var(--grad-primary); border: none; color: #fff; font-size: 0.68rem; font-weight: 700; padding: 3px 10px; border-radius: 9999px; cursor: pointer;">
+                  Ver Temario & Calendario 📅
+                </button>
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Canales de la Biblioteca Escolar -->
+          <div>
+            <div style="font-size: 0.78rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px;">
+              Secciones (${currentStu.course}):
+            </div>
+            <div class="sim-channel-tabs">
+              <button class="sim-tab-btn ${ShowcaseState.portalChannel === 'evaluaciones' ? 'active' : ''}" onclick="setPortalChannel('evaluaciones')">
+                📅 Pruebas
+              </button>
+              <button class="sim-tab-btn ${ShowcaseState.portalChannel === 'guias' ? 'active' : ''}" onclick="setPortalChannel('guias')">
+                📄 Guías
+              </button>
+              <button class="sim-tab-btn ${ShowcaseState.portalChannel === 'clases' ? 'active' : ''}" onclick="setPortalChannel('clases')">
+                📝 Clases
+              </button>
+              <button class="sim-tab-btn ${ShowcaseState.portalChannel === 'avisos' ? 'active' : ''}" onclick="setPortalChannel('avisos')">
+                📢 Avisos
+              </button>
+            </div>
+          </div>
+
+          <!-- Feed del Canal o Evaluaciones -->
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            ${ShowcaseState.portalChannel === 'evaluaciones' ? `
+              <!-- Mini Calendario del Alumno -->
+              ${renderCalendarGridHtml(courseEvaluaciones, true, false)}
+
+              <div style="font-size: 0.75rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-bottom: 6px;">
+                ${ShowcaseState.selectedCalDate ? `Evaluaciones del ${ShowcaseState.selectedCalDate}:` : `Evaluaciones para ${currentStu.course}:`}
+              </div>
+
+              ${(ShowcaseState.selectedCalDate ? courseEvaluaciones.filter(e => e.date === ShowcaseState.selectedCalDate) : courseEvaluaciones).map(ev => `
+                <div style="background: rgba(15,23,42,0.7); border: 1px solid var(--border-glass); border-left: 3px solid ${ev.type.includes('Control') ? '#fbbf24' : '#818cf8'}; border-radius: 12px; padding: 12px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.65rem; font-weight: 800; color: #a5b4fc; text-transform: uppercase;">${ev.type}</span>
+                    <span style="font-size: 0.68rem; font-weight: 800; padding: 2px 6px; border-radius: 9999px; background: rgba(239,68,68,0.2); color: #fca5a5;">En ${ev.days_left} días</span>
+                  </div>
+                  <div style="font-size: 0.85rem; font-weight: 800; color: #fff; margin-top: 4px;">${ev.title}</div>
+                  <div style="font-size: 0.7rem; color: #cbd5e1; margin-top: 2px;">📅 ${ev.date} • ⏰ ${ev.time} hrs</div>
+                  <div style="font-size: 0.72rem; color: #cbd5e1; background: rgba(0,0,0,0.3); padding: 6px 8px; border-radius: 6px; margin-top: 6px;">
+                    <strong>Temario de Estudio:</strong> ${ev.desc}
+                  </div>
+                  <div style="margin-top: 6px; font-size: 0.7rem; color: var(--accent-gold); font-weight: 700;">
+                    ⭐ Puedes canjear hasta +${ev.max_decimas} décimas acumuladas
+                  </div>
+                </div>
+              `).join('')}
+            ` : (courseMaterials.length > 0 ? courseMaterials.map(m => `
+              <div class="sim-material-item">
+                <div class="sim-mat-icon">${m.icon}</div>
+                <div style="flex: 1; overflow: hidden;">
+                  <div style="font-weight: 800; font-size: 0.82rem; color: #fff; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${m.title}</div>
+                  <div style="font-size: 0.68rem; color: var(--text-muted);">Fecha: ${m.date} • Tipo: ${m.ext}</div>
+                </div>
+                <button onclick="downloadSimFile('${m.title}')" style="background: rgba(99,102,241,0.25); border: 1px solid var(--accent-indigo); color: #fff; font-size: 0.65rem; font-weight: 700; padding: 6px 10px; border-radius: var(--radius-sm); cursor: pointer;">
+                  Abrir
+                </button>
+              </div>
+            `).join('') : `
+              <div style="text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.8rem;">
+                No hay recursos en este canal para ${currentStu.course}
+              </div>
+            `)}
+          </div>
+        `;
+
+      } else if (ShowcaseState.currentView === 'admin') {
+        appTitle.textContent = "AulaTap Administración";
+        appSub.textContent = "Director / TI • Panel Central";
+        actionBtn.style.display = 'block';
+        actionBtn.textContent = "Cerrar";
+
+        container.innerHTML = `
+          <!-- Métricas del Sistema -->
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+            <div style="background: rgba(15,23,42,0.7); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px; text-align: center;">
+              <div style="font-size: 1.4rem; font-weight: 900; color: #67e8f9;">45</div>
+              <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: 700;">ALUMNOS REGISTRADOS</div>
+            </div>
+            <div style="background: rgba(15,23,42,0.7); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px; text-align: center;">
+              <div style="font-size: 1.4rem; font-weight: 900; color: #fbbf24;">184</div>
+              <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: 700;">DÉCIMAS DEL SEMESTRE</div>
+            </div>
+          </div>
+
+          <!-- Acciones de los 4 Pilares -->
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="background: rgba(15,23,42,0.7); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-weight: 800; font-size: 0.82rem; color: #fff;">📥 Carga Masiva (Excel / CSV)</div>
+                <div style="font-size: 0.68rem; color: var(--text-muted);">Importar nómina de 6B y 7A con RUT y NFC</div>
+              </div>
+              <button onclick="previewAdminFeature('import')" style="background: rgba(6,182,212,0.2); border: 1px solid var(--accent-cyan); color: #67e8f9; font-size: 0.7rem; font-weight: 700; padding: 6px 10px; border-radius: var(--radius-sm); cursor: pointer;">
+                Subir
+              </button>
+            </div>
+
+            <div style="background: rgba(15,23,42,0.7); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-weight: 800; font-size: 0.82rem; color: #fff;">🔄 Cierre de Semestre y Backup</div>
+                <div style="font-size: 0.68rem; color: var(--text-muted);">Descarga Excel pre-cierre y resetea a 0</div>
+              </div>
+              <button onclick="previewAdminFeature('close')" style="background: rgba(245,158,11,0.2); border: 1px solid var(--accent-gold); color: #fbbf24; font-size: 0.7rem; font-weight: 700; padding: 6px 10px; border-radius: var(--radius-sm); cursor: pointer;">
+                Cerrar
+              </button>
+            </div>
+
+            <div style="background: rgba(15,23,42,0.7); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-weight: 800; font-size: 0.82rem; color: #fff;">💾 Respaldo SQLite 1-Clic</div>
+                <div style="font-size: 0.68rem; color: var(--text-muted);">decipuntos.db integra descargable</div>
+              </div>
+              <button onclick="previewAdminFeature('backup')" style="background: rgba(16,185,129,0.2); border: 1px solid var(--accent-emerald); color: #6ee7b7; font-size: 0.7rem; font-weight: 700; padding: 6px 10px; border-radius: var(--radius-sm); cursor: pointer;">
+                Descargar
+              </button>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // ACCIONES DEL SIMULADOR
+    function simHeaderAction() {
+      if (ShowcaseState.currentView === 'docente') {
+        setMainView('portal');
+      } else {
+        setMainView('docente');
+      }
+    }
+
+    function addPoints(qty) {
+      AudioEngine.playPointAdd();
+      ConfettiEngine.burst(window.innerWidth * 0.28, window.innerHeight * 0.45);
+      
+      const stu = ShowcaseState.students[ShowcaseState.activeStudentIndex];
+      stu.points += qty;
+
+      document.getElementById('sim-points-val').textContent = stu.points;
+      document.getElementById(`deck-pts-${ShowcaseState.activeStudentIndex}`).textContent = stu.points;
+
+      logEvent(`+${qty} Décima(s) asignada(s) a ${stu.name}. Total: ${stu.points} (+${(stu.points*0.1).toFixed(1)}).`, 'success');
+    }
+
+    function setPortalChannel(ch) {
+      ShowcaseState.portalChannel = ch;
+      renderSimulator();
+    }
+
+    function downloadSimFile(title) {
+      AudioEngine.playNfcTap();
+      logEvent(`Descargando material: "${title}" para curso ${ShowcaseState.students[ShowcaseState.activeStudentIndex].course}.`, 'info');
+      alert(`Abriendo recurso pedagógico:\n"${title}"\n(Simulación de descarga en formato oficial)`);
+    }
+
+    // CAMBIAR VISTA PRINCIPAL (Docente / Portal / Admin)
+    function setMainView(viewName) {
+      ShowcaseState.currentView = viewName;
+      
+      document.querySelectorAll('.switcher-btn').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.getElementById(`btn-view-${viewName}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const frame = document.getElementById('phone-frame');
+      const notch = document.getElementById('phone-notch');
+      const indicator = document.getElementById('device-mode-indicator');
+      const iframe = document.getElementById('screen-iframe');
+
+      const baseUrl = window.location.origin && window.location.origin.startsWith('http') ? '' : 'http://localhost:5000';
+
+      if (viewName === 'admin') {
+        frame.classList.add('tablet-mode');
+        notch.style.display = 'none';
+        indicator.textContent = "💻 Tablet / Desktop Admin (Dashboard)";
+        iframe.src = `${baseUrl}/admin`;
+      } else {
+        frame.classList.remove('tablet-mode');
+        notch.style.display = 'flex';
+        indicator.textContent = viewName === 'docente' ? "📱 Smartphone Docente (420px)" : "🎓 Portal Alumno PWA (420px)";
+        iframe.src = viewName === 'docente' ? `${baseUrl}/` : `${baseUrl}/portal`;
+      }
+
+      renderSimulator();
+      logEvent(`Cambio de pantalla del mockup a: [${viewName.toUpperCase()}].`, 'info');
+    }
+
+    // CAMBIAR MODO DE MOTOR: SIMULADOR VS IFRAME EN VIVO
+    function toggleEngineMode() {
+      const isSim = ShowcaseState.engineMode === 'simulator';
+      ShowcaseState.engineMode = isSim ? 'live' : 'simulator';
+
+      const simEl = document.getElementById('simulator-screen');
+      const iframeEl = document.getElementById('screen-iframe');
+      const label = document.getElementById('engine-label');
+      const icon = document.getElementById('engine-icon');
+
+      if (ShowcaseState.engineMode === 'live') {
+        simEl.style.display = 'none';
+        iframeEl.classList.add('active');
+        label.textContent = "Modo Servidor Flask en Vivo";
+        icon.textContent = "🌐";
+        logEvent("Cambiado a modo IFRAME EN VIVO con el backend Flask.", 'warn');
+      } else {
+        simEl.style.display = 'flex';
+        iframeEl.classList.remove('active');
+        label.textContent = "Modo Simulador Ultra Rápido";
+        icon.textContent = "⚡";
+        logEvent("Cambiado a modo SIMULADOR REACTIVO ultra rápido.", 'info');
+      }
+    }
+
+    // SIMULACIÓN DEL TAP NFC DE UN ALUMNO DESDE EL DECK DERECHO
+    function simulateStudentTap(index) {
+      ShowcaseState.activeStudentIndex = index;
+      const stu = ShowcaseState.students[index];
+
+      // Animación del llavero físico acercándose al teléfono
+      const animFob = document.getElementById('nfc-keychain');
+      const animName = document.getElementById('keychain-anim-name');
+      const waves = document.getElementById('nfc-waves');
+
+      animName.textContent = stu.name.split(' ')[0] + ' ' + (stu.name.split(' ')[1] ? stu.name.split(' ')[1][0] + '.' : '');
+      animFob.className = `nfc-keychain-anim visible ${stu.color}`;
+      waves.style.display = 'block';
+
+      AudioEngine.playNfcTap();
+      ConfettiEngine.burst(window.innerWidth * 0.28, window.innerHeight * 0.35);
+
+      logEvent(`[NFC TAP] Llavero detectado: UID=${stu.uid} -> Alumno: ${stu.name} (${stu.course}).`, 'success');
+
+      // Si estamos en modo live, avisarle al iframe
+      try {
+        const iframeWin = document.getElementById('screen-iframe').contentWindow;
+        if (iframeWin) {
+          if (iframeWin.handleNfcStudentRead) iframeWin.handleNfcStudentRead(stu.uid);
+          if (iframeWin.identify) iframeWin.identify({ nfc_uid: stu.uid });
+        }
+      } catch(e) {}
+
+      // Renderizar inmediatamente la ficha del alumno en el simulador
+      renderSimulator();
+
+      setTimeout(() => {
+        animFob.classList.remove('visible');
+        waves.style.display = 'none';
+      }, 1400);
+    }
+
+    function triggerCurrentNfcTap() {
+      simulateStudentTap(ShowcaseState.activeStudentIndex);
+    }
+
+    function tapCurrentKeychain() {
+      simulateStudentTap((ShowcaseState.activeStudentIndex + 1) % ShowcaseState.students.length);
+    }
+
+    function setDocenteTab(tab) {
+      ShowcaseState.docenteTab = tab;
+      AudioEngine.playNfcTap();
+      renderSimulator();
+      logEvent(`Cambio de sub-pestaña docente a: [${tab.toUpperCase()}].`, 'info');
+    }
+
+    function setSimCalDay(dateStr) {
+      AudioEngine.playNfcTap();
+      if (ShowcaseState.selectedCalDate === dateStr) {
+        ShowcaseState.selectedCalDate = null;
+        logEvent("Filtro de fecha limpiado. Mostrando todas las evaluaciones.", 'info');
+      } else {
+        ShowcaseState.selectedCalDate = dateStr;
+        logEvent(`Filtrando evaluaciones para la fecha: ${dateStr}.`, 'info');
+      }
+      renderSimulator();
+    }
+
+    // GENERADOR DE CUADRÍCULA DE CALENDARIO MENSUAL HÍBRIDO
+    function renderCalendarGridHtml(evaluacionesList, isInteractive = true, showAddBtn = true) {
+      const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+      const y = ShowcaseState.calYear;
+      const m = ShowcaseState.calMonth; // 0-11
+      const monthName = monthNames[m];
+
+      const firstDay = new Date(y, m, 1);
+      const startDayOfWeek = (firstDay.getDay() + 6) % 7; // Lunes = 0, Domingo = 6
+      const daysInMonth = new Date(y, m + 1, 0).getDate();
+      const daysInPrevMonth = new Date(y, m, 0).getDate();
+
+      // Mapeo de evaluaciones por fecha YYYY-MM-DD
+      const evMap = {};
+      evaluacionesList.forEach(e => {
+        if (!evMap[e.date]) evMap[e.date] = [];
+        evMap[e.date].push(e);
+      });
+
+      let cellsHtml = '';
+
+      // Días del mes anterior (relleno)
+      for (let i = startDayOfWeek - 1; i >= 0; i--) {
+        const d = daysInPrevMonth - i;
+        cellsHtml += `<div style="opacity: 0.18; font-size: 0.68rem; padding: 4px; user-select: none;">${d}</div>`;
+      }
+
+      // Días del mes actual
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const dayEvs = evMap[dateStr] || [];
+        const isSelected = ShowcaseState.selectedCalDate === dateStr;
+
+        let dotColor = null;
+        if (dayEvs.length > 0) {
+          const topType = dayEvs[0].type || '';
+          if (topType.includes('Control')) dotColor = '#fbbf24';
+          else if (topType.includes('Trabajo')) dotColor = '#34d399';
+          else if (topType.includes('Present')) dotColor = '#38bdf8';
+          else dotColor = '#818cf8';
+        }
+
+        const bgStyle = isSelected
+          ? 'background: var(--grad-primary); color: #fff; font-weight: 800;'
+          : (dayEvs.length > 0 ? 'background: rgba(99,102,241,0.22); color: #fff; font-weight: 800;' : 'background: rgba(255,255,255,0.02);');
+
+        cellsHtml += `
+          <div ${isInteractive ? `onclick="setSimCalDay('${dateStr}')"` : ''} style="font-size: 0.72rem; padding: 4px; border-radius: 6px; cursor: pointer; position: relative; ${bgStyle}">
+            ${d}
+            ${dotColor ? `<span style="position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: ${isSelected ? '#fff' : dotColor}; box-shadow: 0 0 5px ${dotColor};"></span>` : ''}
+          </div>
+        `;
+      }
+
+      return `
+        <div style="background: rgba(22,30,50,0.7); border: 1px solid var(--border-glass); border-radius: 14px; padding: 10px 12px; margin-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <button onclick="navSimMonth(-1)" style="background: rgba(255,255,255,0.08); border: 1px solid var(--border-glass); color: #fff; border-radius: 6px; width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.65rem;" title="Mes anterior">◀</button>
+              <span style="font-size: 0.82rem; font-weight: 800; color: #fff;">📅 ${monthName} ${y}</span>
+              <button onclick="navSimMonth(1)" style="background: rgba(255,255,255,0.08); border: 1px solid var(--border-glass); color: #fff; border-radius: 6px; width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.65rem;" title="Mes siguiente">▶</button>
+            </div>
+            <div style="display: flex; gap: 4px;">
+              <button onclick="setSimCalDay(null)" style="background: rgba(99,102,241,0.2); border: 1px solid var(--accent-indigo); color: #c7d2fe; font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 9999px; cursor: pointer;">
+                ${ShowcaseState.selectedCalDate ? '✕ Ver todas' : 'Ver todo'}
+              </button>
+              ${showAddBtn ? `
+                <button onclick="openSimEvalModal()" style="background: var(--grad-primary); border: none; color: #fff; font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 9999px; cursor: pointer;">
+                  + Agendar
+                </button>
+              ` : ''}
+            </div>
+          </div>
+
+          <!-- Días de semana -->
+          <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.62rem; color: var(--text-dim); font-weight: 800; margin-bottom: 4px;">
+            <div>Lu</div><div>Ma</div><div>Mi</div><div>Ju</div><div>Vi</div><div>Sá</div><div>Do</div>
+          </div>
+
+          <!-- Celdas de días -->
+          <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; text-align: center;">
+            ${cellsHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    function navSimMonth(delta) {
+      AudioEngine.playNfcTap();
+      ShowcaseState.calMonth += delta;
+      if (ShowcaseState.calMonth > 11) {
+        ShowcaseState.calMonth = 0;
+        ShowcaseState.calYear += 1;
+      } else if (ShowcaseState.calMonth < 0) {
+        ShowcaseState.calMonth = 11;
+        ShowcaseState.calYear -= 1;
+      }
+      renderSimulator();
+    }
+
+    function openSimEvalModal() {
+      AudioEngine.playNfcTap();
+      const currentStu = ShowcaseState.students[ShowcaseState.activeStudentIndex];
+      const defaultCourse = currentStu ? currentStu.course : '6° Básico B';
+      const overlay = document.getElementById('sim-modal-overlay');
+      const content = document.getElementById('sim-modal-content');
+      if (!overlay || !content) return;
+
+      content.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div style="font-weight: 900; font-size: 0.95rem; color: #fff;">📅 Agendar Evaluación</div>
+          <button onclick="closeSimEvalModal()" style="background: rgba(255,255,255,0.1); border: none; color: #fff; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-size: 0.8rem;">✕</button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.75rem;">
+          <div>
+            <label style="color: var(--text-muted); font-weight: 700; display: block; margin-bottom: 3px;">Título de la Evaluación:</label>
+            <input id="modal-ev-title" type="text" value="Prueba Sumativa N° 3: Ecosistemas" style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: 8px; color: #fff; padding: 7px 10px; font-size: 0.78rem; font-family: inherit;">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <div>
+              <label style="color: var(--text-muted); font-weight: 700; display: block; margin-bottom: 3px;">Curso:</label>
+              <select id="modal-ev-course" style="width: 100%; background: #1e293b; border: 1px solid var(--border-glass); border-radius: 8px; color: #fff; padding: 7px; font-size: 0.75rem; font-family: inherit;">
+                <option value="6° Básico B" ${defaultCourse.includes('6') ? 'selected' : ''}>6° Básico B</option>
+                <option value="7° Básico A" ${defaultCourse.includes('7') ? 'selected' : ''}>7° Básico A</option>
+                <option value="TODOS">TODOS (General)</option>
+              </select>
+            </div>
+            <div>
+              <label style="color: var(--text-muted); font-weight: 700; display: block; margin-bottom: 3px;">Tipo:</label>
+              <select id="modal-ev-type" style="width: 100%; background: #1e293b; border: 1px solid var(--border-glass); border-radius: 8px; color: #fff; padding: 7px; font-size: 0.75rem; font-family: inherit;">
+                <option value="Prueba Sumativa">Prueba Sumativa</option>
+                <option value="Control Corto">Control Corto</option>
+                <option value="Trabajo Práctico">Trabajo Práctico</option>
+                <option value="Presentación">Presentación</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 8px;">
+            <div>
+              <label style="color: var(--text-muted); font-weight: 700; display: block; margin-bottom: 3px;">Fecha:</label>
+              <input id="modal-ev-date" type="date" value="2026-10-16" style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: 8px; color: #fff; padding: 6px 8px; font-size: 0.75rem; font-family: inherit;">
+            </div>
+            <div>
+              <label style="color: var(--text-muted); font-weight: 700; display: block; margin-bottom: 3px;">Hora:</label>
+              <input id="modal-ev-time" type="time" value="09:15" style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: 8px; color: #fff; padding: 6px 8px; font-size: 0.75rem; font-family: inherit;">
+            </div>
+          </div>
+
+          <div>
+            <label style="color: var(--accent-gold); font-weight: 800; display: block; margin-bottom: 3px;">⭐ Máx. Décimas Canjeables (0 a 10):</label>
+            <input id="modal-ev-max" type="number" min="0" max="10" value="5" style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: 8px; color: #fbbf24; font-weight: 800; padding: 7px 10px; font-size: 0.8rem; font-family: inherit;">
+          </div>
+
+          <div>
+            <label style="color: var(--text-muted); font-weight: 700; display: block; margin-bottom: 3px;">Temario / Contenidos Clave:</label>
+            <textarea id="modal-ev-desc" rows="2" style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: 8px; color: #fff; padding: 7px 10px; font-size: 0.75rem; font-family: inherit; resize: none;">Cadenas tróficas, flujo de energía y adaptaciones biológicas de especies locales.</textarea>
+          </div>
+
+          <div style="display: flex; gap: 8px; margin-top: 6px;">
+            <button onclick="closeSimEvalModal()" style="flex: 1; background: rgba(255,255,255,0.08); border: 1px solid var(--border-glass); color: #fff; padding: 8px; border-radius: var(--radius-sm); font-weight: 700; cursor: pointer;">Cancelar</button>
+            <button onclick="saveSimEvalModal()" style="flex: 2; background: var(--grad-primary); border: none; color: #fff; padding: 8px; border-radius: var(--radius-sm); font-weight: 800; cursor: pointer;">Guardar en Agenda ✨</button>
+          </div>
+        </div>
+      `;
+
+      overlay.style.display = 'flex';
+      logEvent("Abierto formulario interactivo para agendar evaluación.", 'info');
+    }
+
+    function closeSimEvalModal() {
+      const overlay = document.getElementById('sim-modal-overlay');
+      if (overlay) overlay.style.display = 'none';
+    }
+
+    function saveSimEvalModal() {
+      const title = (document.getElementById('modal-ev-title')?.value || 'Evaluación').trim();
+      const course = document.getElementById('modal-ev-course')?.value || '6° Básico B';
+      const type = document.getElementById('modal-ev-type')?.value || 'Prueba Sumativa';
+      const date = document.getElementById('modal-ev-date')?.value || '2026-10-16';
+      const time = document.getElementById('modal-ev-time')?.value || '09:00';
+      const max_decimas = parseInt(document.getElementById('modal-ev-max')?.value || '5', 10);
+      const desc = (document.getElementById('modal-ev-desc')?.value || '').trim();
+
+      const dRef = new Date(2026, 8, 28);
+      const p = date.split('-');
+      const dEv = new Date(parseInt(p[0]), parseInt(p[1]) - 1, parseInt(p[2]));
+      const diffTime = dEv - dRef;
+      const days_left = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+
+      const newId = ShowcaseState.evaluaciones.length + 1;
+      ShowcaseState.evaluaciones.unshift({
+        id: newId,
+        course,
+        title,
+        type,
+        date,
+        time,
+        max_decimas,
+        desc,
+        days_left
+      });
+
+      closeSimEvalModal();
+      AudioEngine.playPointAdd();
+      ConfettiEngine.burst(window.innerWidth * 0.28, window.innerHeight * 0.4);
+      logEvent(`[CALENDARIO] Nueva evaluación guardada: "${title}" (${course}) para el ${date} a las ${time} hrs. Máx: +${max_decimas} décimas.`, 'success');
+
+      ShowcaseState.docenteTab = 'calendario';
+      renderSimulator();
+    }
+
+    function previewCalendarDocente() {
+      setMainView('docente');
+      setConsoleTab('calendar');
+      setDocenteTab('calendario');
+      AudioEngine.playNfcTap();
+    }
+
+    function previewCalendarPortal() {
+      setMainView('portal');
+      setConsoleTab('calendar');
+      setPortalChannel('evaluaciones');
+      AudioEngine.playNfcTap();
+    }
+
+    function addQuickTestEvaluacion() {
+      AudioEngine.playPointAdd();
+      ConfettiEngine.burst(window.innerWidth * 0.28, window.innerHeight * 0.4);
+      const newId = ShowcaseState.evaluaciones.length + 1;
+      ShowcaseState.evaluaciones.unshift({
+        id: newId,
+        course: ShowcaseState.students[ShowcaseState.activeStudentIndex].course,
+        title: `Control Rápido de Recuperación #${newId}`,
+        type: 'Control Corto',
+        date: '2026-10-08',
+        time: '10:00',
+        max_decimas: 4,
+        desc: 'Resolución de 3 problemas clave en pizarra. Canje voluntario de décimas.',
+        days_left: 10
+      });
+      logEvent(`[CALENDARIO] Agendada nueva evaluación interactiva de prueba #${newId}.`, 'success');
+      renderSimulator();
+    }
+
+    function deleteSimEvaluacion(id) {
+      AudioEngine.playNfcTap();
+      ShowcaseState.evaluaciones = ShowcaseState.evaluaciones.filter(e => e.id !== id);
+      logEvent(`[CALENDARIO] Evaluación #${id} eliminada de la agenda.`, 'warn');
+      renderSimulator();
+    }
+
+    // ACTIVACIÓN DE ESCENARIOS
+    function activateScenario(num) {
+      document.querySelectorAll('.scenario-chip').forEach((c, idx) => {
+        c.classList.toggle('active', idx === num - 1);
+      });
+
+      if (num === 1) {
+        setMainView('docente');
+        setConsoleTab('deck');
+        setTimeout(() => simulateStudentTap(0), 300);
+      } else if (num === 2) {
+        setMainView('portal');
+        setConsoleTab('deck');
+        setPortalChannel('guias');
+      } else if (num === 3) {
+        setMainView('portal');
+        setConsoleTab('flow');
+        simulateStudentTap(1);
+      } else if (num === 4) {
+        setMainView('admin');
+        setConsoleTab('pillars');
+      } else if (num === 5) {
+        setMainView('docente');
+        setConsoleTab('calendar');
+        setDocenteTab('calendario');
+        AudioEngine.playPointAdd();
+        ConfettiEngine.burst(window.innerWidth * 0.28, window.innerHeight * 0.4);
+      }
+    }
+
+    // CONSOLE TABS SWITCHER
+    function setConsoleTab(tabKey) {
+      document.querySelectorAll('.console-tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.console-panel').forEach(p => p.classList.remove('active'));
+
+      const targetBtn = Array.from(document.querySelectorAll('.console-tab-btn')).find(b => b.getAttribute('onclick').includes(tabKey));
+      if (targetBtn) targetBtn.classList.add('active');
+
+      const targetPanel = document.getElementById(`panel-${tabKey}`);
+      if (targetPanel) targetPanel.classList.add('active');
+    }
+
+    // ACCIONES PREVIEW DE ADMIN
+    function previewAdminFeature(feat) {
+      setMainView('admin');
+      if (feat === 'import') {
+        alert("DEMO PILAR 1: Carga Masiva\n\nEl sistema acepta archivos .xlsx (Excel) y .csv de hasta 16MB.\nDetecta automáticamente las columnas 'Nombre', 'RUT', 'Curso' y 'NFC' con mapeo flexible.");
+        logEvent("Abierto asistente de importación masiva de estudiantes.", 'info');
+      } else if (feat === 'close') {
+        const conf = confirm("DEMO PILAR 2: Cierre Semestral Seguro\n\n¿Deseas generar el respaldo Excel pre-cierre y reiniciar todas las décimas a 0?");
+        if (conf) {
+          AudioEngine.playPointAdd();
+          ConfettiEngine.burst(window.innerWidth / 2, window.innerHeight / 2);
+          logEvent("Cierre semestral ejecutado con éxito. Respaldo 'resumen_decimas_2026.xlsx' generado.", 'success');
+          alert("¡Periodo cerrado con éxito!\nTodas las décimas se archivaron en la auditoría y los estudiantes parten de 0 para el nuevo periodo.");
+        }
+      } else if (feat === 'users') {
+        alert("DEMO PILAR 3: Gestión de Docentes\n\nControl de usuarios con roles 'docente' y 'admin'. Protección contra auto-eliminación y contraseñas cifradas con Werkzeug SHA-256.");
+        logEvent("Visualizando catálogo de docentes autorizados.", 'info');
+      } else if (feat === 'backup') {
+        window.open('http://localhost:5000/api/admin/mantenimiento/backup-db', '_blank');
+        logEvent("Descargando archivo binario decipuntos.db para respaldo externo.", 'success');
+      }
+    }
+
+    // LOGGING EN EL TERMINAL INTERACTIVO
+    function logEvent(msg, type = 'info') {
+      const term = document.getElementById('sim-terminal');
+      if (!term) return;
+
+      const now = new Date();
+      const timeStr = `[${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}]`;
+
+      const line = document.createElement('div');
+      line.className = 'log-line';
+      line.innerHTML = `
+        <span class="log-time">${timeStr}</span>
+        <span class="log-${type}">${msg}</span>
+      `;
+      term.appendChild(line);
+      term.scrollTop = term.scrollHeight;
+    }
+
+    function clearLogs() {
+      const term = document.getElementById('sim-terminal');
+      if (term) term.innerHTML = '';
+      logEvent("Registro de eventos reiniciado.", 'info');
+    }
+
+    function testSound() {
+      AudioEngine.playNfcTap();
+      setTimeout(() => AudioEngine.playPointAdd(), 250);
+    }
+
+    // RELOJ EN BARRA DE ESTADO
+    function updateClock() {
+      const now = new Date();
+      const hrs = String(now.getHours()).padStart(2, '0');
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      const el = document.getElementById('clock-display');
+      if (el) el.textContent = `${hrs}:${mins}`;
+    }
+
+    // INICIALIZACIÓN
+    document.addEventListener('DOMContentLoaded', () => {
+      ConfettiEngine.init();
+      updateClock();
+      setInterval(updateClock, 30000);
+      renderSimulator();
+    });
+  </script>
+</body>
+</html>

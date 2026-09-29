@@ -1,0 +1,24 @@
+{
+  "name": "AulaTap - Gestión Docente NFC",
+  "short_name": "AulaTap",
+  "description": "App para que el docente gestione décimas y puntos formativos con tarjetas NFC y base de datos local.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/static/icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

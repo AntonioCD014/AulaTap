@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>AulaTap - Panel de Administración Central</title>
+
+  <!-- PWA & Mobile Metas -->
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/svg+xml" href="/static/icons/icon-192.svg">
+
+  <!-- Fuente Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Estilos Base -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+
+  <style>
+    /* Estilos Dashboard Admin */
+    .admin-container {
+      width: 100%;
+      max-width: 980px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 20px 80px 20px;
+      position: relative;
+    }
+
+    .admin-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0 20px 0;
+      border-bottom: 1px solid var(--border-glass);
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .admin-badge-role {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 2px 10px;
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--accent-gold);
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    /* Pestañas Principales de los 4 Pilares */
+    .admin-nav-tabs {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      scrollbar-width: none;
+    }
+
+    .admin-nav-tabs::-webkit-scrollbar { display: none; }
+
+    .admin-tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: rgba(30, 41, 69, 0.5);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .admin-tab-btn:hover {
+      background: rgba(45, 58, 94, 0.75);
+      color: #fff;
+    }
+
+    .admin-tab-btn.active {
+      background: var(--grad-primary);
+      border-color: rgba(165, 180, 252, 0.5);
+      color: #ffffff;
+      box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4);
+    }
+
+    /* Tarjetas de Panel */
+    .admin-panel-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+      margin-bottom: 24px;
+    }
+
+    .panel-card-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-card-sub {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+
+    /* Tablas Administrativas */
+    .admin-table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(15, 23, 42, 0.6);
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+
+    .admin-table th {
+      background: rgba(30, 41, 69, 0.85);
+      color: #c7d2fe;
+      font-weight: 700;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      white-space: nowrap;
+    }
+
+    .admin-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      vertical-align: middle;
+    }
+
+    .admin-table tr:hover td {
+      background: rgba(99, 102, 241, 0.06);
+    }
+
+    /* Botones de Acción en Tablas */
+    .btn-action-icon {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-glass);
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+      width: 30px;
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-action-icon:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .btn-action-icon.delete:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #f87171;
+    }
+
+    /* Cuadrícula de Métricas */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .metric-card {
+      background: rgba(22, 30, 50, 0.7);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-lg);
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-val {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1;
+    }
+
+    .metric-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Caja de Alerta Informativa */
+    .info-callout {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.12) 0%, rgba(124, 58, 237, 0.08) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 14px;
+    }
+
+    .info-callout.warning {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(217, 119, 6, 0.08) 100%);
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toast Notificaciones -->
+  <div id="toast-notice" class="toast-notice">
+    <span id="toast-icon">✨</span>
+    <span id="toast-msg">Mensaje del sistema</span>
+  </div>
+
+  <div class="admin-container">
+
+    <!-- CABECERA -->
+    <header class="admin-header">
+      <div class="brand">
+        <div class="brand-icon-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">AulaTap</h1>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="admin-badge-role">Panel de Administración</span>
+            <span style="font-size: 0.78rem; color: var(--text-dim);">{{ usuario_nombre }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones de Cabecera -->
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <a href="/" class="tag-pill" style="text-decoration: none; color: #a5b4fc; border-color: rgba(99, 102, 241, 0.4); padding: 7px 14px;">
+          ⬅️ Vista Aula NFC
+        </a>
+        <a href="/portal" target="_blank" class="tag-pill" style="text-decoration: none; color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.4); padding: 7px 14px;">
+          Portal Alumno ↗
+        </a>
+        <a href="/logout" class="btn-logout" title="Cerrar sesión">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </a>
+      </div>
+    </header>
+
+    <!-- NAVEGACIÓN ENTRE LOS 4 PILARES -->
+    <nav class="admin-nav-tabs">
+      <button class="admin-tab-btn active" onclick="switchAdminTab('tab-estudiantes')">
+        <span>👥</span> Pilar 1: Alumnos & Cursos
+      </button>
+      <button class="admin-tab-btn" onclick="switchAdminTab('tab-cierre')">
+        <span>🏁</span> Pilar 2: Cierre de Semestre
+      </button>
+      <button class="admin-tab-btn" onclick="switchAdminTab('tab-docentes')">
+        <span>👨‍🏫</span> Pilar 3: Equipo Docente
+      </button>
+      <button class="admin-tab-btn" onclick="switchAdminTab('tab-canales-mantenimiento')">
+        <span>⚙️</span> Pilar 4: Canales & Backups
+      </button>
+    </nav>
+
+    <!-- ========================================================
+         PILAR 1: GESTIÓN DE ESTUDIANTES & CARGA MASIVA
+         ======================================================== -->
+    <section id="tab-estudiantes" class="admin-tab-content">
+      <div class="admin-panel-card">
+        
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+          <div>
+            <h2 class="panel-card-title">👥 Directorio de Estudiantes y Cursos</h2>
+            <div class="panel-card-sub" style="margin-bottom: 0;">
+              Administra nóminas, edita RUTs, cursos, tarjetas NFC o matricula masivamente.
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-scan-nfc" onclick="openModal('modal-import-students')" style="white-space: nowrap; background: var(--grad-p1);">
+              <span>📥</span> Carga Masiva (Excel/CSV)
+            </button>
+            <button class="btn-scan-nfc" onclick="openNewStudentModal()" style="white-space: nowrap;">
+              <span>➕</span> Nuevo Alumno
+            </button>
+          </div>
+        </div>
+
+        <!-- Barra de Filtros y Búsqueda -->
+        <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 220px;">
+            <input 
+              type="text" 
+              id="admin-search-student" 
+              class="form-input" 
+              placeholder="Buscar por nombre, RUT o UID NFC..." 
+              oninput="filterStudentsTable()"
+            >
+          </div>
+          <div style="width: 180px;">
+            <select id="admin-filter-course" class="form-select" onchange="filterStudentsTable()">
+              <option value="todos">Todos los Cursos</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Tabla de Alumnos -->
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th style="width: 40px;">#</th>
+                <th>Nombre Completo</th>
+                <th style="width: 80px;">Curso</th>
+                <th>RUT / ID</th>
+                <th>Tarjeta NFC</th>
+                <th style="width: 80px; text-align: center;">Décimas</th>
+                <th style="width: 90px; text-align: center;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="admin-students-tbody">
+              <!-- Inyectado por JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================
+         PILAR 2: CIERRE DE SEMESTRE / REINICIO DE DÉCIMAS
+         ======================================================== -->
+    <section id="tab-cierre" class="admin-tab-content" style="display: none;">
+      <div class="admin-panel-card">
+        
+        <h2 class="panel-card-title">🏁 Cierre de Ciclo Escolar & Reinicio de Décimas</h2>
+        <div class="panel-card-sub">
+          Finaliza el período lectivo (trimestre/semestre), respalda los puntajes y resetea el contador para el nuevo ciclo formativo.
+        </div>
+
+        <div class="info-callout warning">
+          <div style="font-size: 2rem;">⚠️</div>
+          <div>
+            <h4 style="font-size: 1rem; font-weight: 800; color: #fde68a; margin-bottom: 4px;">
+              ¿Cómo funciona el Cierre de Período?
+            </h4>
+            <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.5;">
+              1. <strong>Respaldo de Seguridad</strong>: Puedes descargar un informe Excel con todos los puntajes finales antes del cierre.<br>
+              2. <strong>Historial de Auditoría</strong>: El sistema crea automáticamente un registro formal en las transacciones con el saldo acumulado de cada estudiante.<br>
+              3. <strong>Puesta a Cero</strong>: Los contadores vuelven a 0 puntos para que los alumnos comiencen a ganar décimas en el nuevo período.
+            </p>
+          </div>
+        </div>
+
+        <!-- Formulario de Cierre -->
+        <div style="background: rgba(30, 41, 69, 0.7); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 22px; max-width: 560px;">
+          
+          <div style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">
+              Selecciona el Curso a Cerrar:
+            </label>
+            <select id="cierre-course-select" class="form-select">
+              <option value="todos">🌟 TODOS los Cursos del Colegio</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom: 18px;">
+            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">
+              Motivo o Glosa del Cierre:
+            </label>
+            <input type="text" id="cierre-motivo-input" class="form-input" value="Cierre 1° Semestre - Canje por décimas en libreta" placeholder="Ej: Cierre 1° Trimestre 2026">
+          </div>
+
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn-scan-nfc" style="background: var(--grad-p3);" onclick="downloadPreCloseReport()">
+              📊 Descargar Respaldo Previo (Excel)
+            </button>
+            <button class="btn-assign-main" style="flex: 1; padding: 12px;" onclick="executeClosePeriod()">
+              🔒 Ejecutar Cierre y Resetear
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================
+         PILAR 3: GESTIÓN DE DOCENTES Y EQUIPO
+         ======================================================== -->
+    <section id="tab-docentes" class="admin-tab-content" style="display: none;">
+      <div class="admin-panel-card">
+        
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+          <div>
+            <h2 class="panel-card-title">👨‍🏫 Equipo Docente & Cuentas de Acceso</h2>
+            <div class="panel-card-sub" style="margin-bottom: 0;">
+              Crea profesores para las distintas asignaturas o asigna permisos de administración.
+            </div>
+          </div>
+          <button class="btn-scan-nfc" onclick="openNewUserModal()">
+            <span>➕</span> Crear Nuevo Usuario
+          </button>
+        </div>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Nombre del Profesor</th>
+                <th>Correo Electrónico</th>
+                <th style="width: 110px;">Rol</th>
+                <th>Fecha Alta</th>
+                <th style="width: 90px; text-align: center;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="admin-users-tbody">
+              <!-- Inyectado por JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================
+         PILAR 4: CANALES PERSONALIZADOS & MANTENIMIENTO
+         ======================================================== -->
+    <section id="tab-canales-mantenimiento" class="admin-tab-content" style="display: none;">
+      
+      <!-- Subsección Métricas Globales -->
+      <div class="metrics-grid" id="admin-metrics-container">
+        <!-- Inyectado por JS -->
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+        
+        <!-- Canales de la Biblioteca -->
+        <div class="admin-panel-card" style="margin-bottom: 0;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+            <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff;">
+              📚 Canales de Biblioteca
+            </h3>
+            <button class="tag-pill" style="cursor: pointer;" onclick="openNewCanalModal()">
+              ➕ Nuevo Canal
+            </button>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 14px;">
+            Crea categorías temáticas para organizar guías, olimpiadas, lecturas o diarios de clase.
+          </p>
+
+          <div id="admin-canales-list" style="display: flex; flex-direction: column; gap: 8px;">
+            <!-- Inyectado por JS -->
+          </div>
+        </div>
+
+        <!-- Mantenimiento & Base de Datos -->
+        <div class="admin-panel-card" style="margin-bottom: 0;">
+          <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 4px;">
+            💾 Copias de Seguridad & Sistema
+          </h3>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 16px;">
+            Descarga copias físicas completas de tu base de datos SQLite con un solo clic.
+          </p>
+
+          <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 16px; margin-bottom: 14px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="font-size: 1.8rem;">📦</div>
+              <div>
+                <div style="font-weight: 800; font-size: 0.92rem; color: #fff;">Base de Datos: decipuntos.db</div>
+                <div style="font-size: 0.75rem; color: var(--text-dim);">SQLite con alumnos, décimas y biblioteca</div>
+              </div>
+            </div>
+            <div style="margin-top: 14px;">
+              <a href="/api/admin/mantenimiento/backup-db" class="btn-assign-main" style="padding: 10px 14px; text-decoration: none; font-size: 0.88rem; width: 100%;">
+                📥 Descargar Copia de Seguridad (.db)
+              </a>
+            </div>
+          </div>
+
+          <div style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4;">
+            💡 <strong>Consejo del Administrador</strong>: Guarda una copia de seguridad en tu pendrive o nube personal al finalizar cada mes o semestre para resguardar toda la historia del aula.
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- ========================================================
+       MODAL: EDITAR ESTUDIANTE
+       ======================================================== -->
+  <div id="modal-edit-student" class="modal-overlay">
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+      <div class="modal-header">
+        <h2 class="modal-title"><span>✏️</span> Editar Estudiante</h2>
+        <button class="btn-close-modal" onclick="closeModal('modal-edit-student')">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit-student-id">
+
+        <div style="margin-bottom: 12px;">
+          <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">Nombre Completo *</label>
+          <input type="text" id="edit-student-name" class="form-input" required>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+          <div style="flex: 1;">
+            <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">Curso *</label>
+            <input type="text" id="edit-student-course" class="form-input" required>
+          </div>
+          <div style="flex: 1;">
+            <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">RUT / ID</label>
+            <input type="text" id="edit-student-rut" class="form-input">
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+          <div style="flex: 1.4;">
+            <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">UID Tarjeta NFC</label>
+            <input type="text" id="edit-student-nfc" class="form-input" placeholder="Ej: 04:12:34:56:78:90">
+          </div>
+          <div style="flex: 0.8;">
+            <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">Décimas</label>
+            <input type="number" id="edit-student-points" class="form-input" min="0">
+          </div>
+        </div>
+
+        <button class="btn-assign-main" onclick="submitEditStudent()">
+          💾 Guardar Cambios
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL: CARGA MASIVA DE ALUMNOS (EXCEL / CSV)
+       ======================================================== -->
+  <div id="modal-import-students" class="modal-overlay">
+    <div class="modal-sheet" style="max-height: 90vh;">
+      <div class="sheet-handle"></div>
+      <div class="modal-header">
+        <h2 class="modal-title"><span>📥</span> Importación Masiva de Estudiantes</h2>
+        <button class="btn-close-modal" onclick="closeModal('modal-import-students')">✕</button>
+      </div>
+      <div class="modal-body">
+        
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
+          Sube la lista del curso en formato Excel (.xlsx) o CSV. El sistema identificará automáticamente los encabezados de columna.
+        </p>
+
+        <!-- Descargar Plantilla Oficial -->
+        <div style="background: rgba(99, 102, 241, 0.12); border: 1px dashed rgba(99, 102, 241, 0.4); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="font-size: 0.8rem; color: #a5b4fc;">
+            <strong>¿No tienes el formato?</strong> Descarga la plantilla oficial.
+          </div>
+          <a href="/api/admin/estudiantes/plantilla" class="tag-pill" style="text-decoration: none; color: #fff; background: var(--grad-primary); border: none; font-weight: 700; padding: 6px 12px;">
+            📥 Descargar Plantilla Excel
+          </a>
+        </div>
+
+        <form id="form-import-students" onsubmit="submitImportStudents(event)">
+          <div style="margin-bottom: 16px;">
+            <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">
+              Selecciona tu archivo (.xlsx o .csv):
+            </label>
+            <input type="file" id="import-file-input" class="form-input" accept=".xlsx, .csv" required style="padding: 10px;">
+          </div>
+
+          <div id="import-result-box" style="display: none; padding: 12px; border-radius: var(--radius-md); margin-bottom: 14px; font-size: 0.82rem;"></div>
+
+          <button type="submit" id="btn-submit-import" class="btn-assign-main">
+            🚀 Procesar e Importar Alumnos
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL: CREAR / EDITAR USUARIO (DOCENTE / ADMIN)
+       ======================================================== -->
+  <div id="modal-user-form" class="modal-overlay">
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+      <div class="modal-header">
+        <h2 class="modal-title" id="user-modal-title"><span>👨‍🏫</span> Cuenta de Usuario</h2>
+        <button class="btn-close-modal" onclick="closeModal('modal-user-form')">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="form-user-id">
+
+        <div style="margin-bottom: 12px;">
+          <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">Nombre Completo del Profesor *</label>
+          <input type="text" id="form-user-name" class="form-input" placeholder="Ej: Patricia Morales Castro" required>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+          <div style="flex: 1;">
+            <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">Usuario (Login) *</label>
+            <input type="text" id="form-user-username" class="form-input" placeholder="Ej: pmorales" required>
+          </div>
+          <div style="flex: 1;">
+            <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">Rol *</label>
+            <select id="form-user-role" class="form-select">
+              <option value="docente">Docente (Aula & Biblioteca)</option>
+              <option value="admin">Administrador (Total)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">Correo Electrónico</label>
+          <input type="email" id="form-user-email" class="form-input" placeholder="docente@colegio.cl">
+        </div>
+
+        <div style="margin-bottom: 18px;">
+          <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;" id="lbl-form-user-pwd">
+            Contraseña *
+          </label>
+          <input type="password" id="form-user-pwd" class="form-input" placeholder="••••••••">
+          <small id="hint-user-pwd" style="display:none; font-size:0.72rem; color:var(--text-dim); margin-top:3px;">
+            (Deja en blanco si no deseas cambiar la clave existente).
+          </small>
+        </div>
+
+        <button class="btn-assign-main" onclick="submitUserForm()">
+          💾 Guardar Usuario
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL: CREAR / EDITAR CANAL
+       ======================================================== -->
+  <div id="modal-canal-form" class="modal-overlay">
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+      <div class="modal-header">
+        <h2 class="modal-title" id="canal-modal-title"><span>📑</span> Canal de Biblioteca</h2>
+        <button class="btn-close-modal" onclick="closeModal('modal-canal-form')">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="form-canal-id">
+
+        <div style="margin-bottom: 12px;">
+          <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">Título del Canal *</label>
+          <input type="text" id="form-canal-titulo" class="form-input" placeholder="Ej: Olimpiadas de Matemática" required>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+          <div style="flex: 1;">
+            <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">Identificador (slug) *</label>
+            <input type="text" id="form-canal-slug" class="form-input" placeholder="Ej: olimpiadas" required>
+          </div>
+          <div style="flex: 1;">
+            <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">Orden Numérico</label>
+            <input type="number" id="form-canal-orden" class="form-input" value="4">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">Descripción</label>
+          <textarea id="form-canal-desc" class="form-input" rows="2" placeholder="Propósito de este canal..."></textarea>
+        </div>
+
+        <button class="btn-assign-main" onclick="submitCanalForm()">
+          💾 Guardar Canal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts del Panel de Administración -->
+  <script src="/static/js/admin.js"></script>
+</body>
+</html>

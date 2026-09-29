@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>AulaTap - Gestión Docente NFC</title>
+  
+  <!-- Metas PWA & Mobile -->
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AulaTap">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/svg+xml" href="/static/icons/icon-192.svg">
+  <link rel="apple-touch-icon" href="/static/icons/icon-192.svg">
+
+  <!-- Tipografía Moderna -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Estilos Gamificados -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+
+  <!-- Canvas para partículas de Confetti gamificado -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Notificación Toast flotante -->
+  <div id="toast-notice" class="toast-notice">
+    <span id="toast-icon">✨</span>
+    <span id="toast-msg">Mensaje del sistema</span>
+  </div>
+
+  <div class="app-container">
+
+    <!-- CABECERA -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 8.32a7.43 7.43 0 0 1 0 7.36"></path>
+            <path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58"></path>
+            <path d="M12.91 4.1a15.91 15.91 0 0 1 .01 15.8"></path>
+            <path d="M16.37 2a20.16 20.16 0 0 1 0 20"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">AulaTap</h1>
+          <div class="brand-sub">Evaluación NFC Aula</div>
+        </div>
+      </div>
+
+      <!-- Acciones de Cabecera: NFC, Admin y Logout -->
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div id="nfc-status-badge" class="nfc-badge" title="Toca para iniciar escáner">
+          <span class="pulse-dot"></span>
+          <span id="nfc-status-text">Verificando NFC...</span>
+        </div>
+
+        {% if usuario_rol == 'admin' %}
+        <a href="/admin" class="btn-logout" title="Panel de Administración" style="background: rgba(99, 102, 241, 0.22); border-color: rgba(99, 102, 241, 0.45); color: #a5b4fc;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </a>
+        {% endif %}
+
+        <a href="/logout" class="btn-logout" title="Cerrar sesión de {{ usuario_nombre }}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </a>
+      </div>
+
+    </header>
+
+    <!-- BARRA DE CONTROL (Filtro por Curso y Buscador Manual) -->
+    <section class="control-bar">
+      <div class="course-select-wrap">
+        <select id="course-filter-select" class="course-select">
+          <option value="todos">Todos</option>
+        </select>
+      </div>
+
+      <div class="search-wrap">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input 
+          type="text" 
+          id="manual-search-input" 
+          class="search-input" 
+          placeholder="Buscar alumno o RUT..." 
+          autocomplete="off"
+        >
+        <!-- Dropdown de autocompletado en vivo -->
+        <div id="search-dropdown" class="search-results-dropdown"></div>
+      </div>
+    </section>
+
+    <!-- BANNER DE ESCANEO ACTIVO -->
+    <div class="nfc-banner">
+      <div class="nfc-banner-text">
+        <h4>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <line x1="12" y1="12" x2="12.01" y2="12"></line>
+            <path d="M8 12a4 4 0 0 1 8 0"></path>
+          </svg>
+          Lector NFC de Aula
+        </h4>
+        <p>Acerca la tarjeta o llavero del estudiante a la parte trasera del teléfono.</p>
+      </div>
+      <button id="btn-scan-banner" class="btn-scan-nfc">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        </svg>
+        Escanear
+      </button>
+    </div>
+
+    <!-- TARJETA DEL ESTUDIANTE ACTIVO -->
+    <section class="student-card-container">
+      
+      <!-- ESTADO VACÍO (Sin estudiante seleccionado aún) -->
+      <div id="student-card-empty" class="student-card empty-state">
+        <div class="empty-icon-wrap">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </div>
+        <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 4px;">Esperando Estudiante</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); max-width: 280px; margin: 0 auto 14px auto;">
+          Acerca una tarjeta NFC o usa el buscador superior para elegir a un estudiante.
+        </p>
+        <button class="tag-pill" style="cursor: pointer; padding: 6px 14px;" onclick="openModal('modal-simulator')">
+          ⚡ Abrir Simulador de Tarjetas
+        </button>
+      </div>
+
+      <!-- ESTADO ACTIVO (Datos del Estudiante) -->
+      <div id="student-card-active" class="student-card" style="display: none;">
+        
+        <div class="card-header-meta">
+          <div class="student-avatar-wrap">
+            <div id="card-avatar-initials" class="avatar-badge">MS</div>
+            <div class="student-info">
+              <h3 id="card-student-name">Nombre del Alumno</h3>
+              <div class="student-tags">
+                <span id="card-student-course" class="tag-pill course">6B</span>
+                <span id="card-student-rut" class="tag-pill">21.345.678-9</span>
+                <span id="card-nfc-badge" class="tag-pill nfc-linked">📶 NFC Activo</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Caja de Marcador de Puntos -->
+        <div class="score-display-box">
+          <div class="score-label-group">
+            <span class="score-title">Puntaje Acumulado</span>
+            <div id="card-score-rank" class="score-rank">⭐ Rango: Destacado</div>
+          </div>
+          <div class="score-digits-wrap">
+            <span id="card-score-digits" class="score-digits">0</span>
+            <span class="score-unit">pts</span>
+          </div>
+        </div>
+
+        <!-- Insignias y Logros de Honor del Estudiante -->
+        <div id="card-student-badges-box" style="display: none; padding: 10px 14px; background: rgba(15, 23, 42, 0.65); border: 1px solid var(--border-glass); border-radius: var(--radius-md); margin-bottom: 12px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <span style="font-size: 0.72rem; font-weight: 800; color: #fbbf24; text-transform: uppercase;">
+              🏆 Insignias Desbloqueadas:
+            </span>
+            <span id="card-badges-count" style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted);">
+              0 / 6
+            </span>
+          </div>
+          <div id="card-student-badges-list" class="student-badges-mini-row"></div>
+        </div>
+
+        <!-- Historial Mini -->
+        <div class="mini-history">
+          <div class="mini-history-title">Últimas Asignaciones</div>
+          <div id="card-mini-history-list" class="mini-history-list"></div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- PANEL DE ASIGNACIÓN RÁPIDA -->
+    <section class="action-card">
+      <div class="section-label">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+        Seleccionar Décimas / Puntos
+      </div>
+
+      <!-- Selector de Puntos -->
+      <div class="points-selector-grid">
+        <button class="point-pill-btn p1 active" data-points="1">
+          <span class="point-val">+1</span>
+          <span class="point-sub">Décima</span>
+        </button>
+        <button class="point-pill-btn p2" data-points="2">
+          <span class="point-val">+2</span>
+          <span class="point-sub">Décimas</span>
+        </button>
+        <button class="point-pill-btn p3" data-points="3">
+          <span class="point-val">+3</span>
+          <span class="point-sub">Décimas</span>
+        </button>
+      </div>
+
+      <!-- SECCIÓN DE PERSONALIZACIÓN DE DÉCIMAS -->
+      <div class="custom-points-box">
+        <div class="custom-points-header">
+          <span class="custom-points-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            Personalizar Cantidad
+          </span>
+          <span id="custom-points-badge" class="custom-status-badge">Rápido (+1)</span>
+        </div>
+
+        <div class="stepper-control">
+          <button type="button" class="stepper-btn" id="btn-dec-points" aria-label="Disminuir décima" title="Disminuir 1">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+          
+          <div class="stepper-value-wrap">
+            <input 
+              type="number" 
+              id="custom-points-input" 
+              class="stepper-input" 
+              value="1" 
+              min="-20" 
+              max="50"
+              step="1"
+            >
+            <span id="stepper-suffix" class="stepper-suffix">décima</span>
+          </div>
+
+          <button type="button" class="stepper-btn" id="btn-inc-points" aria-label="Aumentar décima" title="Aumentar 1">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Chips de atajo numérico rápido -->
+        <div class="quick-points-chips">
+          <button type="button" class="qp-chip negative" data-custom-val="-1">-1 (Corrección)</button>
+          <button type="button" class="qp-chip" data-custom-val="4">+4</button>
+          <button type="button" class="qp-chip" data-custom-val="5">+5</button>
+          <button type="button" class="qp-chip" data-custom-val="10">+10 (Gran Logro)</button>
+        </div>
+      </div>
+
+      <!-- Motivo de la asignación -->
+      <div class="section-label">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        Motivo
+      </div>
+
+      <div class="reason-tags-wrap">
+        <button class="reason-tag active" data-reason="Participación">🙋 Participación</button>
+        <button class="reason-tag" data-reason="Tarea">📚 Tarea</button>
+        <button class="reason-tag" data-reason="Conducta">🌟 Buena Conducta</button>
+        <button class="reason-tag" data-reason="Trabajo en clases">✍️ Trabajo en clases</button>
+        <button class="reason-tag" data-reason="Trabajo en equipo">🤝 En equipo</button>
+        <button class="reason-tag" data-reason="Resolución problema">💡 Resolución</button>
+      </div>
+
+      <!-- Botón de Confirmación Principal -->
+      <button id="btn-assign" class="btn-assign-main" disabled>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        Confirmar Asignación
+      </button>
+
+    </section>
+
+    <!-- BARRA INFERIOR DOCK DE NAVEGACIÓN -->
+    <nav class="bottom-dock">
+      <button class="dock-btn active" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        Inicio
+      </button>
+
+      <button class="dock-btn" onclick="openCalendarioModal()" title="Calendario y Evaluaciones">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        Pruebas
+      </button>
+
+      <button class="dock-btn" onclick="openBibliotecaModal()" title="Biblioteca y Clases por Canal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+        Biblioteca
+      </button>
+
+      <button class="dock-btn" onclick="openBuzonEntregasModal()" title="Buzón de Tareas y Entregas">
+        <div style="position: relative; display: inline-flex; align-items: center; justify-content: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline>
+            <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>
+          </svg>
+          <span id="dock-entregas-badge" class="dock-badge-counter" style="display: none;">0</span>
+        </div>
+        Buzón
+      </button>
+
+      <button class="dock-btn" onclick="openModal('modal-reports')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        Reportes
+      </button>
+
+
+      <button class="dock-btn" onclick="openBindingModalWithUid('')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+        </svg>
+        Vincular
+      </button>
+
+      <button class="dock-btn" onclick="openModal('modal-new-student')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <line x1="19" y1="8" x2="19" y2="14"></line>
+          <line x1="22" y1="11" x2="16" y2="11"></line>
+        </svg>
+        + Alumno
+      </button>
+
+      <button class="dock-btn" onclick="openModal('modal-simulator')" title="Simular lecturas NFC">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polygon points="10 8 16 12 10 16 10 8"></polygon>
+        </svg>
+        Simulador
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- ========================================================
+       MODAL 1: REPORTERÍA Y EXPORTACIÓN (EXCEL / CSV)
+       ======================================================== -->
+  <div id="modal-reports" class="modal-overlay">
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+      
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <span>📊</span> Resumen & Calificaciones
+        </h2>
+        <button class="btn-close-modal" onclick="closeModal('modal-reports')">✕</button>
+      </div>
+
+      <div class="modal-body">
+        
+        <!-- Filtro de Curso en Reportes -->
+        <div style="margin-bottom: 12px;">
+          <select id="report-course-filter" class="form-select">
+            <option value="todos">Todos los Cursos</option>
+          </select>
+        </div>
+
+        <!-- Estadísticas Rápidas -->
+        <div class="reports-stats-row">
+          <div class="stat-box">
+            <div id="stat-total-points" class="stat-number">0</div>
+            <div class="stat-desc">Décimas Entregadas</div>
+          </div>
+          <div class="stat-box">
+            <div id="stat-average-points" class="stat-number">0.0</div>
+            <div class="stat-desc">Promedio por Alumno</div>
+          </div>
+        </div>
+
+        <!-- Botones de Exportación -->
+        <div class="export-actions-row">
+          <button class="btn-export btn-export-excel" onclick="exportExcel()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="8" y1="13" x2="16" y2="13"></line>
+              <line x1="8" y1="17" x2="16" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            Excel (.xlsx)
+          </button>
+          <button class="btn-export btn-export-csv" onclick="exportCsv()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            CSV (Libro)
+          </button>
+        </div>
+
+        <!-- Tabla de Ranking / Puntajes -->
+        <div class="ranking-table-wrap">
+          <table class="ranking-table">
+            <thead>
+              <tr>
+                <th style="width: 38px;">#</th>
+                <th>Estudiante</th>
+                <th>Pts</th>
+                <th style="width: 45px;">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="ranking-table-body">
+              <!-- Inyectado por JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL 2: VINCULACIÓN NFC
+       ======================================================== -->
+  <div id="modal-binding" class="modal-overlay">
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <span>📶</span> Vincular Tarjeta NFC
+        </h2>
+        <button class="btn-close-modal" onclick="closeModal('modal-binding')">✕</button>
+      </div>
+
+      <div class="modal-body">
+        
+        <!-- Radar de Escaneo -->
+        <div class="nfc-scan-target">
+          <div class="nfc-waves-anim">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 8.32a7.43 7.43 0 0 1 0 7.36"></path>
+              <path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58"></path>
+              <path d="M12.91 4.1a15.91 15.91 0 0 1 .01 15.8"></path>
+              <path d="M16.37 2a20.16 20.16 0 0 1 0 20"></path>
+            </svg>
+          </div>
+          <p style="font-size: 0.82rem; font-weight: 700; color: var(--text-main);">
+            Acerca la tarjeta o llavero NFC al sensor
+          </p>
+          <div id="bind-detected-uid" class="detected-uid-display">
+            Esperando lectura...
+          </div>
+        </div>
+
+        <!-- Formulario de Asociación -->
+        <div style="margin-bottom: 14px;">
+          <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">
+            UID de la Tarjeta (o ingresa manualmente):
+          </label>
+          <input type="text" id="bind-uid-input" class="form-input" placeholder="Ej: 04:a1:b2:c3:d4:e5">
+        </div>
+
+        <div style="margin-bottom: 18px;">
+          <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">
+            Asignar al Estudiante:
+          </label>
+          <select id="bind-student-select" class="form-select">
+            <option value="">Cargando estudiantes...</option>
+          </select>
+        </div>
+
+        <button class="btn-assign-main" onclick="submitNfcBinding()">
+          💾 Guardar Vinculación
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL 3: AGREGAR NUEVO ESTUDIANTE
+       ======================================================== -->
+  <div id="modal-new-student" class="modal-overlay">
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <span>➕</span> Nuevo Estudiante
+        </h2>
+        <button class="btn-close-modal" onclick="closeModal('modal-new-student')">✕</button>
+      </div>
+
+      <div class="modal-body">
+        
+        <div style="margin-bottom: 12px;">
+          <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">
+            Nombre Completo *
+          </label>
+          <input type="text" id="new-student-name" class="form-input" placeholder="Ej: Camila Ignacia Silva">
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+          <div style="flex: 1;">
+            <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">
+              Curso *
+            </label>
+            <input type="text" id="new-student-course" class="form-input" placeholder="Ej: 6B, 7A">
+          </div>
+          <div style="flex: 1;">
+            <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">
+              RUT / ID
+            </label>
+            <input type="text" id="new-student-rut" class="form-input" placeholder="Ej: 21.345.678-9">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 18px;">
+          <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">
+            UID Tarjeta NFC (Opcional)
+          </label>
+          <input type="text" id="new-student-nfc" class="form-input" placeholder="Ej: 04:12:34:56:78:90">
+        </div>
+
+        <button class="btn-assign-main" onclick="submitNewStudent()">
+          ✨ Registrar Estudiante
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL 4: SIMULADOR DE LECTURA NFC (Desarrollo & Pruebas)
+       ======================================================== -->
+  <div id="modal-simulator" class="modal-overlay">
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <span>⚡</span> Simulador de Tarjetas NFC
+        </h2>
+        <button class="btn-close-modal" onclick="closeModal('modal-simulator')">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
+          Toca cualquiera de las tarjetas de prueba para simular que un alumno acercó su tarjeta física:
+        </p>
+
+        <div id="sim-tags-container"></div>
+
+        <div style="margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px;">
+          <label style="display:block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">
+            Simular UID no registrado o personalizado:
+          </label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="sim-custom-uid" class="form-input" placeholder="Ej: 04:99:88:77:66" value="04:99:88:77:66">
+            <button class="btn-scan-nfc" onclick="simulateCustomUid()">Simular</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL 5: BIBLIOTECA DIGITAL & CANALES DE AULA (DOCENTE)
+       ======================================================== -->
+  <div id="modal-biblioteca" class="modal-overlay">
+    <div class="modal-sheet" style="max-height: 92vh;">
+      <div class="sheet-handle"></div>
+
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <span>📚</span> Biblioteca & Clases
+        </h2>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <a href="/portal" target="_blank" class="tag-pill" style="text-decoration: none; color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.4); font-size: 0.72rem; padding: 4px 8px;" title="Abrir portal de estudiante">
+            Portal Alumno ↗
+          </a>
+          <button class="btn-close-modal" onclick="closeModal('modal-biblioteca')">✕</button>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        
+        <!-- Barra de Filtros y Acción Rápida -->
+        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+          <select id="bib-filter-course" class="form-select" style="flex: 1;" onchange="loadBibliotecaMaterialesDocente()">
+            <option value="todos">Todos los Cursos</option>
+          </select>
+          <button id="btn-toggle-material-form" class="btn-scan-nfc" onclick="toggleNewMaterialForm()" style="white-space: nowrap;">
+            <span>➕</span> Publicar
+          </button>
+        </div>
+
+        <!-- Pestañas de Canales -->
+        <div class="channel-nav-bar" id="docente-channel-nav" style="margin-bottom: 14px;">
+          <button class="channel-tab-btn active" data-channel="todos" onclick="setDocenteChannel('todos')">
+            <span>🌟</span> Todos
+          </button>
+          <button class="channel-tab-btn" data-channel="guias" onclick="setDocenteChannel('guias')">
+            <span>📑</span> Guías & Material
+          </button>
+          <button class="channel-tab-btn" data-channel="clases" onclick="setDocenteChannel('clases')">
+            <span>📅</span> Clases Día a Día
+          </button>
+          <button class="channel-tab-btn" data-channel="avisos" onclick="setDocenteChannel('avisos')">
+            <span>📢</span> Avisos
+          </button>
+        </div>
+
+        <!-- FORMULARIO DE NUEVO MATERIAL / REGISTRAR CLASE (Colapsable) -->
+        <div id="bib-new-material-panel" style="display: none; background: rgba(30, 41, 69, 0.75); border: 1px solid rgba(99, 102, 241, 0.4); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 18px; box-shadow: 0 8px 24px rgba(0,0,0,0.3);">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <h4 style="font-size: 0.95rem; font-weight: 800; color: #fff;">
+              ✨ Nuevo Contenido / Clase
+            </h4>
+            <button type="button" onclick="toggleNewMaterialForm()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1rem;">✕</button>
+          </div>
+
+          <form id="form-upload-material" onsubmit="submitNewMaterial(event)" enctype="multipart/form-data">
+            
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+              <div style="flex: 1;">
+                <label style="display:block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">
+                  Canal *
+                </label>
+                <select id="new-mat-canal" class="form-select" onchange="onCanalChangeInForm()" required>
+                  <option value="guias">📑 Guías y Material</option>
+                  <option value="clases">📅 Clase del Día a Día</option>
+                  <option value="avisos">📢 Avisos y Novedades</option>
+                </select>
+              </div>
+
+              <div style="flex: 1;">
+                <label style="display:block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">
+                  Curso Destino *
+                </label>
+                <select id="new-mat-curso" class="form-select" required>
+                  <option value="TODOS">TODOS los Cursos</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Campo Fecha de Clase (visible cuando el canal es clases) -->
+            <div id="wrap-mat-fecha" style="display: none; margin-bottom: 10px;">
+              <label style="display:block; font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 4px;">
+                🗓️ Fecha de la Clase
+              </label>
+              <input type="date" id="new-mat-fecha" class="form-input">
+            </div>
+
+            <div style="margin-bottom: 10px;">
+              <label style="display:block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">
+                Título o Tema *
+              </label>
+              <input type="text" id="new-mat-titulo" class="form-input" placeholder="Ej: Suma de Fracciones con Distinto Denominador" required>
+            </div>
+
+            <div style="margin-bottom: 10px;">
+              <label style="display:block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">
+                Descripción / Resumen / Tarea
+              </label>
+              <textarea id="new-mat-desc" class="form-input" rows="3" placeholder="Objetivo, síntesis de lo visto en clase o instrucciones para la guía..."></textarea>
+            </div>
+
+            <div style="margin-bottom: 10px;">
+              <label style="display:block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">
+                Tipo de Recurso Adjunto
+              </label>
+              <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                <button type="button" class="qp-chip active" id="btn-type-file" onclick="setMaterialType('archivo')">📁 Archivo / Foto Pizarra</button>
+                <button type="button" class="qp-chip" id="btn-type-link" onclick="setMaterialType('enlace')">🔗 Enlace Web</button>
+                <button type="button" class="qp-chip" id="btn-type-text" onclick="setMaterialType('texto')">📝 Solo Texto</button>
+              </div>
+            </div>
+
+            <!-- Input Archivo -->
+            <div id="wrap-input-file" style="margin-bottom: 14px;">
+              <label style="display:block; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px;">
+                Selecciona archivo (PDF, Word, imagen/foto pizarra, PPT, ZIP hasta 32MB):
+              </label>
+              <input type="file" id="new-mat-file" class="form-input" style="padding: 8px;" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg,.webp,.mp4,.zip,.txt">
+            </div>
+
+            <!-- Input Enlace -->
+            <div id="wrap-input-link" style="display: none; margin-bottom: 14px;">
+              <label style="display:block; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px;">
+                URL del recurso (YouTube, Google Drive, Canva, etc.):
+              </label>
+              <input type="url" id="new-mat-url" class="form-input" placeholder="https://...">
+            </div>
+
+            <button type="submit" id="btn-save-material" class="btn-assign-main" style="padding: 12px;">
+              💾 Publicar en Biblioteca
+            </button>
+
+          </form>
+        </div>
+
+        <!-- Lista de Materiales Publicados -->
+        <div id="bib-docente-feed" style="display: flex; flex-direction: column; gap: 10px;">
+          <!-- Inyectado por JS -->
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL 6: CALENDARIO HÍBRIDO & EVALUACIONES (DOCENTE)
+       ======================================================== -->
+  <div id="modal-calendario" class="modal-overlay">
+    <div class="modal-sheet" style="max-height: 92vh; overflow-y: auto;">
+      <div class="sheet-handle"></div>
+
+      <!-- Cabecera del Modal -->
+      <div class="modal-header" style="flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <h2 class="modal-title" style="margin: 0;">
+            <span>📅</span> Evaluaciones & Pruebas
+          </h2>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button class="btn-primary-action" onclick="toggleNewEvaluacionForm()" style="padding: 6px 12px; font-size: 0.78rem;">
+            + Agendar
+          </button>
+          <button class="btn-close-modal" onclick="closeModal('modal-calendario')">✕</button>
+        </div>
+      </div>
+
+      <div class="modal-body" style="padding-top: 8px;">
+
+        <!-- Selector de Curso para el Calendario -->
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+          <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-dim);">Curso:</label>
+          <select id="cal-filter-course" class="form-select" style="flex: 1;" onchange="loadDocenteEvaluaciones()">
+            <option value="todos">Todos los cursos</option>
+          </select>
+        </div>
+
+        <!-- Panel Formulario Nueva / Edición de Evaluación (Ocultable) -->
+        <div id="eval-form-panel" style="display: none; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(99, 102, 241, 0.4); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <h3 id="eval-form-title" style="font-size: 0.9rem; font-weight: 800; color: #fff; margin: 0;">
+              ✨ Nueva Evaluación
+            </h3>
+            <button type="button" class="btn-close-modal" style="font-size: 0.8rem;" onclick="toggleNewEvaluacionForm()">✕</button>
+          </div>
+
+          <form id="form-save-evaluacion" onsubmit="handleSaveEvaluacion(event)">
+            <input type="hidden" id="eval-edit-id" value="">
+
+            <div style="margin-bottom: 10px;">
+              <label style="display:block; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px;">
+                Título de la Evaluación / Prueba:
+              </label>
+              <input type="text" id="eval-input-titulo" class="form-input" placeholder="Ej: Prueba Sumativa N° 2: Fracciones" required>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+              <div>
+                <label style="display:block; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px;">
+                  Curso Destino:
+                </label>
+                <select id="eval-input-curso" class="form-select" required>
+                  <!-- Poblado por JS -->
+                </select>
+              </div>
+              <div>
+                <label style="display:block; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px;">
+                  Tipo de Evaluación:
+                </label>
+                <select id="eval-input-tipo" class="form-select">
+                  <option value="Prueba Sumativa">Prueba Sumativa</option>
+                  <option value="Control Corto">Control Corto</option>
+                  <option value="Trabajo Práctico">Trabajo Práctico</option>
+                  <option value="Presentación / Disertación">Presentación / Disertación</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+              <div>
+                <label style="display:block; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px;">
+                  Fecha:
+                </label>
+                <input type="date" id="eval-input-fecha" class="form-input" required>
+              </div>
+              <div>
+                <label style="display:block; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px;">
+                  Hora / Bloque:
+                </label>
+                <input type="time" id="eval-input-hora" class="form-input" value="08:30">
+              </div>
+              <div>
+                <label style="display:block; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px;" title="Tope de décimas de AulaTap aplicables">
+                  Tope Décimas:
+                </label>
+                <input type="number" id="eval-input-max-decimas" class="form-input" min="0" max="20" value="5">
+              </div>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+              <label style="display:block; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px;">
+                Temario y Contenidos Clave:
+              </label>
+              <textarea id="eval-input-desc" class="form-input" rows="2" placeholder="Temas evaluados, materiales requeridos, páginas de estudio..."></textarea>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+              <button type="submit" id="btn-save-eval-submit" class="btn-assign-main" style="padding: 10px; flex: 1;">
+                💾 Guardar Evaluación
+              </button>
+              <button type="button" class="btn-assign-sec" style="padding: 10px;" onclick="toggleNewEvaluacionForm()">
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Componente Híbrido: Mini-Calendario + Agenda -->
+        <div class="calendar-hybrid-wrapper">
+          
+          <!-- 1. Mini-Calendario Mensual -->
+          <div class="mini-calendar-card">
+            <div class="calendar-month-header">
+              <div class="calendar-month-title">
+                <span id="cal-month-name">Octubre 2026</span>
+              </div>
+              <div class="calendar-nav-group">
+                <button class="btn-cal-today" onclick="calGoToday()">Hoy</button>
+                <button class="btn-cal-nav" onclick="calPrevMonth()" title="Mes anterior">◀</button>
+                <button class="btn-cal-nav" onclick="calNextMonth()" title="Mes siguiente">▶</button>
+              </div>
+            </div>
+
+            <!-- Cabecera de días -->
+            <div class="calendar-grid-weekdays">
+              <div class="calendar-weekday">Lu</div>
+              <div class="calendar-weekday">Ma</div>
+              <div class="calendar-weekday">Mi</div>
+              <div class="calendar-weekday">Ju</div>
+              <div class="calendar-weekday">Vi</div>
+              <div class="calendar-weekday">Sá</div>
+              <div class="calendar-weekday">Do</div>
+            </div>
+
+            <!-- Celdas de días -->
+            <div id="cal-days-grid" class="calendar-grid-days">
+              <!-- Inyectado por JS -->
+            </div>
+          </div>
+
+          <!-- 2. Lista de Evaluaciones / Agenda -->
+          <div class="eval-agenda-section">
+            <div class="eval-agenda-header">
+              <div class="eval-agenda-title">
+                <span>📋</span> <span id="eval-agenda-status-text">Próximas Evaluaciones</span>
+              </div>
+              <button id="btn-clear-date-filter" class="btn-filter-clear" style="display: none;" onclick="clearDateFilter()">
+                Ver todas
+              </button>
+            </div>
+
+            <div id="eval-docente-list" class="eval-card-list">
+              <!-- Inyectado por JS -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL 7: BUZÓN DE ENTREGAS Y TAREAS (DOCENTE)
+       ======================================================== -->
+  <div id="modal-buzon-entregas" class="modal-overlay">
+    <div class="modal-sheet" style="max-height: 92vh; overflow-y: auto;">
+      <div class="sheet-handle"></div>
+
+      <div class="modal-header" style="align-items: center; justify-content: space-between;">
+        <h2 class="modal-title" style="margin: 0;">
+          <span>📥</span> Buzón de Tareas Recibidas
+        </h2>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button class="btn-close-modal" onclick="closeModal('modal-buzon-entregas')">✕</button>
+        </div>
+      </div>
+
+      <div class="modal-body" style="padding-top: 10px;">
+        <!-- Barra de Filtros: Curso y Estado -->
+        <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+          <select id="buzon-filter-curso" class="form-select" style="flex: 1; min-width: 140px;" onchange="loadDocenteEntregas()">
+            <option value="todos">Todos los Cursos</option>
+          </select>
+
+          <div style="display: flex; gap: 6px;">
+            <button type="button" class="qp-chip active" id="btn-filtro-pendientes" onclick="setDocenteEntregaEstadoFilter('pendiente')">
+              ⏳ Pendientes
+            </button>
+            <button type="button" class="qp-chip" id="btn-filtro-revisadas" onclick="setDocenteEntregaEstadoFilter('revisado')">
+              ✅ Revisadas
+            </button>
+            <button type="button" class="qp-chip" id="btn-filtro-todas" onclick="setDocenteEntregaEstadoFilter('todos')">
+              Todas
+            </button>
+          </div>
+        </div>
+
+        <!-- Lista de Entregas Recibidas -->
+        <div id="buzon-docente-feed" style="display: flex; flex-direction: column; gap: 14px;">
+          <!-- Inyectado por JS -->
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 8: Visor de Foto de Alumno (Docente Lightbox) -->
+  <div id="modal-docente-lightbox" class="modal-overlay" onclick="closeDocenteLightbox(event)">
+    <div style="position: relative; max-width: 90vw; max-height: 90vh; display: flex; flex-direction: column; align-items: center;" onclick="event.stopPropagation();">
+      <button class="btn-close-modal" style="position: absolute; top: -14px; right: -14px; background: #0f172a; border: 1px solid var(--border-glass); z-index: 10;" onclick="closeDocenteLightbox()">✕</button>
+      <img id="docente-lightbox-img" src="" alt="Foto entrega estudiante" style="max-width: 100%; max-height: 82vh; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); object-fit: contain;">
+      <div id="docente-lightbox-caption" style="margin-top: 8px; font-size: 0.82rem; color: #cbd5e1; text-align: center; font-weight: 600;"></div>
+    </div>
+  </div>
+
+  <!-- Script Principal -->
+  <script src="/static/js/nfc_app.js"></script>
+</body>
+</html>

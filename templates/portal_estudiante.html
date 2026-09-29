@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>AulaTap - Portal del Estudiante & Biblioteca Digital</title>
+
+  <!-- PWA & Mobile Metas -->
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/svg+xml" href="/static/icons/icon-192.svg">
+
+  <!-- Fuente Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Estilos Base -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+
+  <style>
+    /* Estilos específicos del Portal del Estudiante */
+    .portal-container {
+      width: 100%;
+      max-width: 580px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 14px 16px 60px 16px;
+      position: relative;
+    }
+
+    .portal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0 16px 0;
+      border-bottom: 1px solid var(--border-glass);
+      margin-bottom: 16px;
+    }
+
+    .portal-brand-badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 2px 8px;
+      background: rgba(6, 182, 212, 0.2);
+      color: var(--accent-cyan);
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+      margin-top: 2px;
+    }
+
+    /* Tarjeta de Identificación / Bienvenida */
+    .auth-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(20px);
+      border-radius: var(--radius-xl);
+      padding: 24px 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Radar de escaneo NFC */
+    .nfc-tap-prompt {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.2) 0%, rgba(124, 58, 237, 0.15) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      margin-bottom: 18px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .nfc-tap-prompt:hover {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.3) 0%, rgba(124, 58, 237, 0.25) 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 18px rgba(99, 102, 241, 0.3);
+    }
+
+    .nfc-tap-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--grad-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: #fff;
+    }
+
+    /* Formulario de Entrada Rápida */
+    .quick-login-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .divider-text {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 4px 0;
+    }
+
+    .divider-text::before, .divider-text::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .divider-text::before { margin-right: .5em; }
+    .divider-text::after { margin-left: .5em; }
+
+    /* Perfil del Estudiante Autenticado */
+    .student-hero-banner {
+      background: linear-gradient(135deg, rgba(30, 41, 69, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: var(--radius-xl);
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .student-hero-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .student-profile-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .student-points-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%);
+      color: #1e1b4b;
+      font-weight: 900;
+      font-size: 0.95rem;
+      border-radius: var(--radius-pill);
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+    }
+
+    /* Pestañas de Canales */
+    .channel-nav-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 4px 2px 14px 2px;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .channel-nav-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .channel-tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: rgba(30, 41, 69, 0.6);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-pill);
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .channel-tab-btn:hover {
+      background: rgba(45, 58, 94, 0.8);
+      color: #fff;
+    }
+
+    .channel-tab-btn.active {
+      background: var(--grad-primary);
+      border-color: rgba(165, 180, 252, 0.5);
+      color: #ffffff;
+      box-shadow: 0 4px 18px rgba(124, 58, 237, 0.4);
+    }
+
+    .channel-tab-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: var(--radius-pill);
+      background: rgba(0, 0, 0, 0.25);
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+
+    /* Tarjetas de Material / Biblioteca */
+    .resource-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .resource-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(16px);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .resource-card:hover {
+      border-color: rgba(99, 102, 241, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .resource-card.type-clase {
+      border-left: 4px solid var(--accent-cyan);
+    }
+
+    .resource-card.type-guia {
+      border-left: 4px solid var(--accent-purple);
+    }
+
+    .resource-card.type-aviso {
+      border-left: 4px solid var(--accent-gold);
+    }
+
+    .resource-meta-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .resource-badge-channel {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-channel-guias {
+      background: rgba(139, 92, 246, 0.18);
+      color: #c4b5fd;
+      border: 1px solid rgba(139, 92, 246, 0.35);
+    }
+
+    .badge-channel-clases {
+      background: rgba(6, 182, 212, 0.18);
+      color: #67e8f9;
+      border: 1px solid rgba(6, 182, 212, 0.35);
+    }
+
+    .badge-channel-avisos {
+      background: rgba(245, 158, 11, 0.18);
+      color: #fde68a;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    .resource-date {
+      font-size: 0.76rem;
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+
+    .resource-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 6px;
+      line-height: 1.35;
+    }
+
+    .resource-desc {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 14px;
+      white-space: pre-line;
+    }
+
+    .resource-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-action-resource {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-download-primary {
+      background: var(--grad-primary);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+    }
+
+    .btn-download-primary:hover {
+      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-resource-outline {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-glass);
+      color: var(--text-main);
+    }
+
+    .btn-resource-outline:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+    }
+
+    .empty-library {
+      text-align: center;
+      padding: 40px 20px;
+      background: rgba(22, 30, 50, 0.4);
+      border: 1px dashed var(--border-glass);
+      border-radius: var(--radius-lg);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toast Notificaciones -->
+  <div id="toast-notice" class="toast-notice">
+    <span id="toast-icon">✨</span>
+    <span id="toast-msg">Mensaje del sistema</span>
+  </div>
+
+  <div class="portal-container">
+
+    <!-- CABECERA -->
+    <header class="portal-header">
+      <div class="brand">
+        <div class="brand-icon-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">AulaTap</h1>
+          <span class="portal-brand-badge">Portal Estudiante</span>
+        </div>
+      </div>
+
+      <a href="/login" class="tag-pill" style="text-decoration: none; color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.35); padding: 6px 12px;">
+        🔐 Acceso Docente
+      </a>
+    </header>
+
+    <!-- SECCIÓN 1: IDENTIFICACIÓN (Si aún no se identifica el estudiante) -->
+    <section id="section-auth" class="auth-card">
+      
+      <!-- Lector NFC para Estudiante -->
+      <div id="btn-portal-nfc" class="nfc-tap-prompt" title="Toca para escanear tarjeta o llavero NFC">
+        <div class="nfc-tap-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M6 8.32a7.43 7.43 0 0 1 0 7.36"></path>
+            <path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58"></path>
+            <path d="M12.91 4.1a15.91 15.91 0 0 1 .01 15.8"></path>
+            <path d="M16.37 2a20.16 20.16 0 0 1 0 20"></path>
+          </svg>
+        </div>
+        <div style="flex: 1;">
+          <div style="font-weight: 800; font-size: 0.95rem; color: #ffffff;">
+            Acerca tu Tarjeta o Llavero NFC
+          </div>
+          <div style="font-size: 0.78rem; color: var(--text-muted);">
+            Toca aquí y acerca tu tarjeta al teléfono para entrar al instante.
+          </div>
+        </div>
+      </div>
+
+      <div class="divider-text">O ingresa manualmente</div>
+
+      <div class="quick-login-grid">
+        <!-- Búsqueda por RUT -->
+        <div>
+          <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">
+            Ingresa tu RUT o Identificador
+          </label>
+          <div style="display: flex; gap: 8px;">
+            <input 
+              type="text" 
+              id="student-rut-input" 
+              class="form-input" 
+              placeholder="Ej: 21.345.678-9" 
+              autocomplete="off"
+            >
+            <button class="btn-scan-nfc" onclick="identifyByRut()" style="white-space: nowrap;">
+              Ingresar
+            </button>
+          </div>
+        </div>
+
+        <div class="divider-text">O elige tu curso directamente</div>
+
+        <!-- Selector directo de curso sin cuenta -->
+        <div>
+          <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">
+            Ver biblioteca por curso:
+          </label>
+          <div style="display: flex; gap: 8px;">
+            <select id="portal-course-select" class="form-select">
+              <option value="">Cargando cursos...</option>
+            </select>
+            <button class="btn-scan-nfc" onclick="identifyByCourse()" style="white-space: nowrap;">
+              Ver Curso
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Simulador NFC para pruebas sin sensor físico -->
+      <div style="margin-top: 14px; text-align: center;">
+        <button class="tag-pill" style="cursor: pointer; background: transparent;" onclick="openSimModal()">
+          ⚡ Simular Tarjeta NFC de Alumno
+        </button>
+      </div>
+
+    </section>
+
+    <!-- SECCIÓN 2: PORTAL ACTIVO DEL ESTUDIANTE -->
+    <main id="section-portal-active" style="display: none;">
+
+      <!-- Banner Hero con Datos del Alumno / Curso -->
+      <div class="student-hero-banner">
+        <div class="student-hero-header">
+          <div class="student-profile-info">
+            <div id="portal-avatar" class="avatar-badge" style="width: 48px; height: 48px; font-size: 1.1rem;">
+              AL
+            </div>
+            <div>
+              <h2 id="portal-student-name" style="font-size: 1.2rem; font-weight: 800; color: #fff; line-height: 1.2;">
+                Nombre del Estudiante
+              </h2>
+              <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+                <span id="portal-student-course" class="tag-pill course">6B</span>
+                <span id="portal-student-rut" class="tag-pill">21.345.678-9</span>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-logout" title="Cambiar de estudiante" onclick="resetPortalView()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+              <line x1="12" y1="2" x2="12" y2="12"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Resumen de Gamificación (si se identificó como estudiante individual) -->
+        <div id="portal-gamification-box" style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
+          <div>
+            <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">
+              Tus Décimas Ganadas
+            </div>
+            <div id="portal-rank-text" style="font-size: 0.8rem; color: #67e8f9; font-weight: 600;">
+              ⭐ Rango: Destacado
+            </div>
+          </div>
+          <div class="student-points-pill">
+            <span id="portal-points-num">0</span>
+            <span style="font-size: 0.75rem; text-transform: uppercase;">décimas</span>
+          </div>
+        </div>
+
+        <!-- Fila de Vista Rápida de Insignias y Logros -->
+        <div id="portal-badges-preview-box" style="display: none; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px; margin-top: 4px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <span style="font-size: 0.72rem; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.5px;">
+              🏆 Medallas & Logros:
+            </span>
+            <button class="tag-pill" style="font-size: 0.68rem; padding: 2px 8px; cursor: pointer; background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.35); color: #fde68a;" onclick="switchPortalChannel('insignias')">
+              Ver Colección ↗
+            </button>
+          </div>
+          <div id="portal-badges-preview" class="student-badges-mini-row"></div>
+        </div>
+      </div>
+
+      <!-- Spotlight de Próxima Evaluación (Banner Interactivo) -->
+      <div id="portal-spotlight-wrap"></div>
+
+      <!-- Buscador interno de biblioteca -->
+      <div style="margin-bottom: 14px;">
+        <div class="search-wrap">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input 
+            type="text" 
+            id="portal-search-input" 
+            class="search-input" 
+            placeholder="Buscar guías, temas o clases..." 
+            autocomplete="off"
+          >
+        </div>
+      </div>
+
+      <!-- Selector de Canales (Pestañas) -->
+      <nav id="channel-tabs" class="channel-nav-bar">
+        <button class="channel-tab-btn active" data-channel="todos">
+          <span>🌟</span> Todo el Material
+          <span class="channel-tab-count" id="count-todos">0</span>
+        </button>
+        <button class="channel-tab-btn" data-channel="insignias" id="tab-btn-insignias" style="display: none;">
+          <span>🏆</span> Insignias
+          <span class="channel-tab-count" id="count-insignias">0</span>
+        </button>
+        <button class="channel-tab-btn" data-channel="entregas" id="tab-btn-entregas" style="display: none;">
+          <span>📤</span> Mis Entregas
+          <span class="channel-tab-count" id="count-entregas">0</span>
+        </button>
+        <button class="channel-tab-btn" data-channel="evaluaciones">
+          <span>📅</span> Evaluaciones
+          <span class="channel-tab-count" id="count-evaluaciones">0</span>
+        </button>
+        <button class="channel-tab-btn" data-channel="guias">
+          <span>📑</span> Guías & Material
+          <span class="channel-tab-count" id="count-guias">0</span>
+        </button>
+        <button class="channel-tab-btn" data-channel="clases">
+          <span>📅</span> Clases Día a Día
+          <span class="channel-tab-count" id="count-clases">0</span>
+        </button>
+        <button class="channel-tab-btn" data-channel="avisos">
+          <span>📢</span> Avisos
+          <span class="channel-tab-count" id="count-avisos">0</span>
+        </button>
+      </nav>
+
+      <!-- Feed de Materiales / Biblioteca -->
+      <div id="portal-resources-feed" class="resource-list">
+        <!-- Inyectado dinámicamente por JavaScript -->
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- Modal de Simulación NFC para pruebas rápidas -->
+  <div id="modal-portal-sim" class="modal-overlay">
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+      <div class="modal-header">
+        <h2 class="modal-title"><span>⚡</span> Simulador NFC Estudiantes</h2>
+        <button class="btn-close-modal" onclick="closeSimModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
+          Toca una tarjeta para simular el tap del estudiante:
+        </p>
+        <div id="portal-sim-tags" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Inyectado por JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 1: Subir Entrega de Tarea / Foto de Cuaderno -->
+  <div id="modal-subir-entrega" class="modal-overlay">
+    <div class="modal-sheet" style="max-height: 92vh; overflow-y: auto;">
+      <div class="sheet-handle"></div>
+      <div class="modal-header">
+        <h2 class="modal-title"><span>📤</span> Entregar Tarea al Profesor</h2>
+        <button class="btn-close-modal" onclick="closeSubirEntregaModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;">
+          Sube una fotografía nítida de tu cuaderno o tu archivo PDF para que el docente lo revise y te otorgue décimas bonus.
+        </p>
+
+        <form id="form-subir-entrega" onsubmit="submitFormEntrega(event)">
+          <input type="hidden" id="entrega-material-id" value="">
+          <input type="hidden" id="entrega-evaluacion-id" value="">
+
+          <div style="margin-bottom: 12px;">
+            <label style="display:block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">
+              Título o Nombre de la Tarea *
+            </label>
+            <input type="text" id="entrega-titulo-input" class="form-input" placeholder="Ej: Ejercicios Guía 4 resueltos" required>
+          </div>
+
+          <div style="margin-bottom: 12px;">
+            <label style="display:block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">
+              Comentario para el Profesor (Opcional):
+            </label>
+            <textarea id="entrega-comentario-input" class="form-input" rows="2" placeholder="Profe, adjunto las fotos de la página 32 y 33..."></textarea>
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label style="display:block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">
+              Archivo / Foto de Cuaderno *
+            </label>
+            
+            <div class="dropzone-upload" onclick="document.getElementById('entrega-file-input').click()">
+              <input type="file" id="entrega-file-input" style="display: none;" accept="image/*,.pdf,.doc,.docx" capture="environment" onchange="onEntregaFileChanged(event)" required>
+              <div style="font-size: 2rem; margin-bottom: 6px;">📷</div>
+              <div style="font-size: 0.85rem; font-weight: 800; color: #fff;">
+                Tomar foto con la cámara o elegir archivo
+              </div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">
+                Admite fotos del cuaderno (JPG, PNG) o documentos (PDF, Word hasta 32MB)
+              </div>
+            </div>
+
+            <!-- Preview del archivo seleccionado -->
+            <div id="entrega-file-preview-wrap" style="display: none; margin-top: 10px; padding: 10px; background: rgba(15,23,42,0.8); border: 1px solid var(--border-glass); border-radius: var(--radius-md); align-items: center; justify-content: space-between;">
+              <div style="display: flex; align-items: center; gap: 10px; overflow: hidden;">
+                <img id="entrega-img-preview" src="" alt="Vista previa" style="display: none; width: 44px; height: 44px; border-radius: 6px; object-fit: cover;">
+                <span id="entrega-doc-icon" style="display: none; font-size: 1.8rem;">📄</span>
+                <div style="overflow: hidden;">
+                  <div id="entrega-file-name" style="font-size: 0.8rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;"></div>
+                  <div id="entrega-file-size" style="font-size: 0.7rem; color: var(--text-muted);"></div>
+                </div>
+              </div>
+              <button type="button" class="btn-close-modal" style="font-size: 0.8rem;" onclick="clearEntregaFile()">✕</button>
+            </div>
+          </div>
+
+          <button type="submit" id="btn-submit-entrega" class="btn-assign-main" style="padding: 12px; width: 100%;">
+            🚀 Enviar Tarea al Profesor
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Visor de Imagen / Foto de Cuaderno (Lightbox) -->
+  <div id="modal-lightbox" class="modal-overlay" onclick="closeLightbox(event)">
+    <div style="position: relative; max-width: 90vw; max-height: 90vh; display: flex; flex-direction: column; align-items: center;" onclick="event.stopPropagation();">
+      <button class="btn-close-modal" style="position: absolute; top: -14px; right: -14px; background: #0f172a; border: 1px solid var(--border-glass); z-index: 10;" onclick="closeLightbox()">✕</button>
+      <img id="lightbox-img" src="" alt="Foto entrega" style="max-width: 100%; max-height: 82vh; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); object-fit: contain;">
+      <div id="lightbox-caption" style="margin-top: 8px; font-size: 0.82rem; color: #cbd5e1; text-align: center; font-weight: 600;"></div>
+    </div>
+  </div>
+
+  <!-- Script del Portal -->
+  <script>
+    // Estado del Portal
+    const PortalState = {
+      activeStudent: null,
+      activeCourse: null,
+      activeChannel: 'todos',
+      materials: [],
+      evaluaciones: [],
+      entregas: [],
+      canales: [],
+      isNfcScanning: false,
+      ndefReader: null,
+      calCurrentDate: new Date(),
+      selectedCalDateStr: null
+    };
+
+    const MESES_ES = [
+      "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+      "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    ];
+
+    const DIAS_ES = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+
+    // Audio Chime Synthesizer para Logros e Insignias
+    function playAchievementSound() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = audioCtx.currentTime;
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // Do, Mi, Sol, Do agudo
+        notes.forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+          gain.gain.setValueAtTime(0.25, now + idx * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.35);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + idx * 0.08);
+          osc.stop(now + idx * 0.08 + 0.4);
+        });
+      } catch (e) {}
+    }
+
+    // Notificaciones Toast
+    function showToast(msg, icon = '✨') {
+      const toast = document.getElementById('toast-notice');
+      document.getElementById('toast-msg').textContent = msg;
+      document.getElementById('toast-icon').textContent = icon;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3200);
+    }
+
+    // Cargar lista de cursos disponibles al inicio
+    async function loadPortalCursos() {
+      try {
+        const res = await fetch('/api/portal/cursos');
+        const cursos = await res.json();
+        const select = document.getElementById('portal-course-select');
+        select.innerHTML = '<option value="">Selecciona un curso...</option>';
+        cursos.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c;
+          opt.textContent = `Curso ${c}`;
+          select.appendChild(opt);
+        });
+      } catch (e) {
+        console.warn("Error cargando cursos:", e);
+      }
+    }
+
+    // Identificar vía API
+    async function identify(params) {
+      try {
+        const qs = new URLSearchParams(params).toString();
+        const res = await fetch(`/api/portal/identificar?${qs}`);
+        const data = await res.json();
+
+        if (!data.encontrado && !data.estudiante && !data.materiales?.length && !data.evaluaciones?.length) {
+          showToast('No se encontró al estudiante o curso.', '❌');
+          return;
+        }
+
+        PortalState.activeStudent = data.estudiante;
+        PortalState.activeCourse = data.curso_activo;
+        PortalState.canales = data.canales || [];
+        PortalState.materials = data.materiales || [];
+        PortalState.evaluaciones = data.evaluaciones || [];
+        PortalState.entregas = data.entregas || (data.estudiante ? data.estudiante.entregas || [] : []);
+
+        renderActivePortal();
+        showToast('¡Bienvenido a tu Portal Escolar!', '🚀');
+      } catch (err) {
+        showToast('Error de conexión con el servidor', '⚠️');
+      }
+    }
+
+    function identifyByRut() {
+      const rut = document.getElementById('student-rut-input').value.trim();
+      if (!rut) {
+        showToast('Por favor ingresa tu RUT.', '⚠️');
+        return;
+      }
+      identify({ rut });
+    }
+
+    function identifyByCourse() {
+      const curso = document.getElementById('portal-course-select').value;
+      if (!curso) {
+        showToast('Por favor selecciona un curso.', '⚠️');
+        return;
+      }
+      identify({ curso });
+    }
+
+    // Renderizar la vista activa
+    function renderActivePortal() {
+      document.getElementById('section-auth').style.display = 'none';
+      document.getElementById('section-portal-active').style.display = 'block';
+
+      const s = PortalState.activeStudent;
+      const c = PortalState.activeCourse;
+
+      if (s) {
+        // Iniciales y nombre
+        const parts = s.nombre_completo.split(' ');
+        const initials = parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : parts[0].substring(0, 2).toUpperCase();
+        document.getElementById('portal-avatar').textContent = initials;
+        document.getElementById('portal-student-name').textContent = s.nombre_completo;
+        document.getElementById('portal-student-course').textContent = s.curso;
+        document.getElementById('portal-student-rut').textContent = s.rut || 'Sin RUT';
+        document.getElementById('portal-student-rut').style.display = s.rut ? 'inline-block' : 'none';
+
+        // Puntos
+        document.getElementById('portal-points-num').textContent = s.puntaje_acumulado;
+        document.getElementById('portal-gamification-box').style.display = 'flex';
+
+        // Botones de pestañas especiales
+        const btnIns = document.getElementById('tab-btn-insignias');
+        const btnEnt = document.getElementById('tab-btn-entregas');
+        if (btnIns) btnIns.style.display = 'inline-flex';
+        if (btnEnt) btnEnt.style.display = 'inline-flex';
+
+        // Mini preview de insignias
+        const previewBox = document.getElementById('portal-badges-preview-box');
+        const previewRow = document.getElementById('portal-badges-preview');
+        if (previewBox && previewRow && s.insignias) {
+          previewBox.style.display = 'block';
+          const unlocked = s.insignias.filter(i => i.desbloqueado);
+          if (unlocked.length > 0) {
+            previewRow.innerHTML = unlocked.map(ins => `
+              <span class="mini-badge-pill" title="${escapeHtml(ins.nombre)}: ${escapeHtml(ins.descripcion)}">
+                <span>${ins.icono}</span> ${escapeHtml(ins.nombre)}
+              </span>
+            `).join('');
+          } else {
+            previewRow.innerHTML = `<span style="font-size:0.75rem; color:var(--text-dim); font-style:italic;">¡Participa en clases y entrega tareas para ganar tus insignias!</span>`;
+          }
+        }
+        
+        // Rango gamificado
+        const pts = s.puntaje_acumulado;
+        let rank = "Principiante";
+        if (pts >= 20) rank = "👑 Gran Maestro";
+        else if (pts >= 10) rank = "🏆 Maestro del Aula";
+        else if (pts >= 6) rank = "⭐ Destacado";
+        else if (pts >= 3) rank = "⚡ En Progreso";
+        document.getElementById('portal-rank-text').textContent = `Nivel: ${rank}`;
+      } else {
+        document.getElementById('portal-avatar').textContent = c;
+        document.getElementById('portal-student-name').textContent = `Biblioteca del Curso ${c}`;
+        document.getElementById('portal-student-course').textContent = c;
+        document.getElementById('portal-student-rut').style.display = 'none';
+        document.getElementById('portal-gamification-box').style.display = 'none';
+        const btnIns = document.getElementById('tab-btn-insignias');
+        const btnEnt = document.getElementById('tab-btn-entregas');
+        if (btnIns) btnIns.style.display = 'none';
+        if (btnEnt) btnEnt.style.display = 'none';
+        const previewBox = document.getElementById('portal-badges-preview-box');
+        if (previewBox) previewBox.style.display = 'none';
+      }
+
+      renderSpotlightBanner();
+      updateCounts();
+      renderFeed();
+    }
+
+    // Banner destacado con cuenta regresiva de la próxima evaluación
+    function renderSpotlightBanner() {
+      const wrap = document.getElementById('portal-spotlight-wrap');
+      if (!wrap) return;
+
+      const futuras = PortalState.evaluaciones.filter(e => e.dias_restantes !== null && e.dias_restantes >= 0);
+      if (futuras.length === 0) {
+        wrap.innerHTML = '';
+        return;
+      }
+
+      const nextEval = futuras[0];
+      const d = nextEval.dias_restantes;
+
+      let badgeHtml = '';
+      if (d === 0) badgeHtml = '<span class="eval-time-badge urgent">🎯 ¡Hoy es la prueba!</span>';
+      else if (d === 1) badgeHtml = '<span class="eval-time-badge urgent">🔔 Mañana</span>';
+      else if (d <= 3) badgeHtml = `<span class="eval-time-badge urgent">⏳ En ${d} días</span>`;
+      else if (d <= 7) badgeHtml = `<span class="eval-time-badge soon">⏳ En ${d} días</span>`;
+      else badgeHtml = `<span class="eval-time-badge normal">📅 En ${d} días</span>`;
+
+      let fechaLegible = nextEval.fecha || '';
+      if (nextEval.fecha) {
+        const parts = nextEval.fecha.split('-');
+        const dateObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+        const diaSemana = DIAS_ES[dateObj.getDay()];
+        fechaLegible = `${diaSemana} ${parts[2]} de ${MESES_ES[parseInt(parts[1]) - 1]}`;
+      }
+
+      wrap.innerHTML = `
+        <div class="student-eval-spotlight">
+          <div class="spotlight-top">
+            <span class="spotlight-label">
+              <span>⏳</span> Próxima Evaluación
+            </span>
+            ${badgeHtml}
+          </div>
+          <div class="spotlight-title">${escapeHtml(nextEval.titulo)}</div>
+          <div class="spotlight-meta">
+            <span style="display:flex; align-items:center; gap:4px; color:#fff;">
+              📅 ${fechaLegible}
+            </span>
+            ${nextEval.hora ? `<span>⏰ ${escapeHtml(nextEval.hora)} hrs</span>` : ''}
+            <span class="tag-pill course">Curso ${escapeHtml(nextEval.curso)}</span>
+          </div>
+          ${nextEval.descripcion ? `
+            <div style="font-size: 0.78rem; color: #e2e8f0; margin-top: 8px; line-height: 1.4; background: rgba(0,0,0,0.25); padding: 6px 10px; border-radius: 8px;">
+              <strong>Temario:</strong> ${escapeHtml(nextEval.descripcion)}
+            </div>
+          ` : ''}
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap; gap: 8px;">
+            <div class="eval-decimas-meta" style="font-size: 0.72rem;">
+              ⭐ Puedes aplicar hasta +${nextEval.max_decimas} décimas de bonificación
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn-action-resource btn-upload-task" style="padding: 5px 12px; font-size: 0.75rem;" onclick="openSubirEntregaModal(null, '${escapeHtml(nextEval.titulo)}', ${nextEval.id})">
+                📤 Entregar Trabajo
+              </button>
+              <button class="btn-action-resource" style="padding: 5px 12px; font-size: 0.75rem; background: var(--grad-primary); border: none; color: #fff; cursor: pointer; border-radius: var(--radius-pill);" onclick="switchPortalChannel('evaluaciones')">
+                Ver Temario 📅
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function switchPortalChannel(channelName) {
+      document.querySelectorAll('.channel-tab-btn').forEach(btn => {
+        if (btn.dataset.channel === channelName) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      PortalState.activeChannel = channelName;
+      renderFeed();
+    }
+
+    function updateCounts() {
+      const mats = PortalState.materials;
+      document.getElementById('count-todos').textContent = mats.length;
+      const countEvalEl = document.getElementById('count-evaluaciones');
+      if (countEvalEl) countEvalEl.textContent = PortalState.evaluaciones.length;
+      document.getElementById('count-guias').textContent = mats.filter(m => m.canal_slug === 'guias').length;
+      document.getElementById('count-clases').textContent = mats.filter(m => m.canal_slug === 'clases').length;
+      document.getElementById('count-avisos').textContent = mats.filter(m => m.canal_slug === 'avisos').length;
+
+      const s = PortalState.activeStudent;
+      const countInsEl = document.getElementById('count-insignias');
+      if (countInsEl && s && s.insignias) {
+        const unl = s.insignias.filter(i => i.desbloqueado).length;
+        countInsEl.textContent = `${unl}/${s.insignias.length}`;
+      }
+      const countEntEl = document.getElementById('count-entregas');
+      if (countEntEl) {
+        countEntEl.textContent = PortalState.entregas ? PortalState.entregas.length : 0;
+      }
+    }
+
+    function renderFeed() {
+      const container = document.getElementById('portal-resources-feed');
+      const search = (document.getElementById('portal-search-input').value || '').trim().toLowerCase();
+      const currentChannel = PortalState.activeChannel;
+
+      // Pestaña Insignias y Logros
+      if (currentChannel === 'insignias') {
+        renderStudentBadges(container);
+        return;
+      }
+
+      // Pestaña Buzón de Entregas
+      if (currentChannel === 'entregas') {
+        renderStudentDeliveries(container);
+        return;
+      }
+
+      // Vista de Evaluaciones y Calendario Alumno
+      if (currentChannel === 'evaluaciones') {
+        renderStudentCalendarFeed(container, search);
+        return;
+      }
+
+      let filtered = PortalState.materials;
+
+      if (currentChannel !== 'todos') {
+        filtered = filtered.filter(m => m.canal_slug === currentChannel);
+      }
+
+      if (search) {
+        filtered = filtered.filter(m => 
+          m.titulo.toLowerCase().includes(search) || 
+          (m.descripcion && m.descripcion.toLowerCase().includes(search))
+        );
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="empty-library">
+            <div style="font-size: 2.2rem; margin-bottom: 8px;">📂</div>
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 6px;">No hay materiales aquí todavía</h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted); max-width: 280px; margin: 0 auto;">
+              El profesor aún no ha publicado guías o clases en esta sección.
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => {
+        const typeClass = item.canal_slug === 'clases' ? 'type-clase' : (item.canal_slug === 'guias' ? 'type-guia' : 'type-aviso');
+        const badgeClass = `badge-channel-${item.canal_slug || 'guias'}`;
+        const channelTitle = item.canal_titulo || item.canal_slug;
+
+        let dateDisplay = '';
+        if (item.fecha_clase) {
+          const [y, m, d] = item.fecha_clase.split('-');
+          dateDisplay = `🗓️ Clase: ${d}/${m}/${y}`;
+        } else if (item.creado_en) {
+          dateDisplay = `Publicado: ${item.creado_en.substring(0, 10)}`;
+        }
+
+        const stId = PortalState.activeStudent ? PortalState.activeStudent.id : '';
+        const downloadUrl = `/api/portal/descargar-material/${item.id}?estudiante_id=${stId}&download=1`;
+
+        // Botón de acción según tipo
+        let actionBtn = '';
+        if (item.tipo === 'archivo' && item.url_recurso) {
+          actionBtn = `
+            <a href="${downloadUrl}" class="btn-action-resource btn-download-primary" download onclick="onDownloadMaterialClick(${item.id})">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Descargar Archivo (${item.nombre_archivo || 'Documento'})
+            </a>
+          `;
+        } else if (item.tipo === 'enlace' && item.url_recurso) {
+          actionBtn = `
+            <a href="${item.url_recurso}" target="_blank" rel="noopener noreferrer" class="btn-action-resource btn-download-primary" onclick="onDownloadMaterialClick(${item.id})">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+              Abrir Enlace Web
+            </a>
+          `;
+        }
+
+        const entregarBtn = `
+          <button class="btn-action-resource btn-upload-task" onclick="openSubirEntregaModal(${item.id}, '${escapeHtml(item.titulo)}', null)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Entregar Tarea / Foto
+          </button>
+        `;
+
+        return `
+          <article class="resource-card ${typeClass}">
+            <div class="resource-meta-top">
+              <span class="resource-badge-channel ${badgeClass}">${channelTitle}</span>
+              <span class="resource-date">${dateDisplay}</span>
+            </div>
+            <h3 class="resource-title">${escapeHtml(item.titulo)}</h3>
+            ${item.descripcion ? `<div class="resource-desc">${escapeHtml(item.descripcion)}</div>` : ''}
+            <div class="resource-actions">
+              ${actionBtn}
+              ${entregarBtn}
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    // Renderizar sección de Evaluaciones en el Portal
+    function renderStudentCalendarFeed(container, search) {
+      let evList = PortalState.evaluaciones;
+
+      if (search) {
+        evList = evList.filter(e =>
+          e.titulo.toLowerCase().includes(search) ||
+          (e.descripcion && e.descripcion.toLowerCase().includes(search)) ||
+          e.tipo.toLowerCase().includes(search)
+        );
+      }
+
+      if (PortalState.selectedCalDateStr) {
+        evList = evList.filter(e => e.fecha === PortalState.selectedCalDateStr);
+      }
+
+      const year = PortalState.calCurrentDate.getFullYear();
+      const month = PortalState.calCurrentDate.getMonth();
+      const firstDayIndex = new Date(year, month, 1).getDay();
+      const startingCol = (firstDayIndex + 6) % 7;
+      const totalDays = new Date(year, month + 1, 0).getDate();
+
+      const today = new Date();
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+      const evMap = {};
+      PortalState.evaluaciones.forEach(ev => {
+        if (!ev.fecha) return;
+        if (!evMap[ev.fecha]) evMap[ev.fecha] = [];
+        evMap[ev.fecha].push(ev);
+      });
+
+      let daysHtml = '';
+      for (let i = 0; i < startingCol; i++) {
+        daysHtml += '<div class="calendar-day-cell empty"></div>';
+      }
+
+      for (let day = 1; day <= totalDays; day++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const isToday = dateStr === todayStr ? 'today' : '';
+        const isSelected = dateStr === PortalState.selectedCalDateStr ? 'selected' : '';
+
+        let dotsHtml = '';
+        if (evMap[dateStr] && evMap[dateStr].length > 0) {
+          const tipos = [...new Set(evMap[dateStr].map(e => e.tipo))];
+          const dotElements = tipos.slice(0, 3).map(tipo => {
+            let tipoClass = 'prueba';
+            if (tipo.includes('Control')) tipoClass = 'control';
+            else if (tipo.includes('Trabajo')) tipoClass = 'trabajo';
+            else if (tipo.includes('Presentación')) tipoClass = 'presentacion';
+            return `<span class="cal-dot ${tipoClass}"></span>`;
+          }).join('');
+          dotsHtml = `<div class="calendar-day-dots">${dotElements}</div>`;
+        }
+
+        daysHtml += `
+          <div class="calendar-day-cell ${isToday} ${isSelected}" onclick="onPortalDayClick('${dateStr}')">
+            ${day}
+            ${dotsHtml}
+          </div>
+        `;
+      }
+
+      let cardsHtml = '';
+      if (evList.length === 0) {
+        cardsHtml = `
+          <div class="empty-library" style="padding: 24px 16px;">
+            <div style="font-size: 2rem; margin-bottom: 6px;">🎉</div>
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 4px;">No hay evaluaciones ${PortalState.selectedCalDateStr ? 'en este día' : 'programadas'}</h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted);">
+              ${PortalState.selectedCalDateStr ? 'Toca "Ver todas las fechas" para revisar las demás.' : '¡Todo al día! Revisa tus guías y clases en las otras pestañas.'}
+            </p>
+          </div>
+        `;
+      } else {
+        cardsHtml = evList.map(ev => {
+          let cardTipoClass = 'tipo-prueba';
+          let tipoBadgeClass = 'prueba';
+          if (ev.tipo.includes('Control')) { cardTipoClass = 'tipo-control'; tipoBadgeClass = 'control'; }
+          else if (ev.tipo.includes('Trabajo')) { cardTipoClass = 'tipo-trabajo'; tipoBadgeClass = 'trabajo'; }
+          else if (ev.tipo.includes('Presentación')) { cardTipoClass = 'tipo-presentacion'; tipoBadgeClass = 'presentacion'; }
+
+          const d = ev.dias_restantes;
+          let timeBadge = '';
+          if (d === 0) timeBadge = '<span class="eval-time-badge urgent">🎯 ¡Hoy!</span>';
+          else if (d === 1) timeBadge = '<span class="eval-time-badge urgent">🔔 Mañana</span>';
+          else if (d > 1 && d <= 3) timeBadge = `<span class="eval-time-badge urgent">⏳ En ${d} días</span>`;
+          else if (d > 3 && d <= 7) timeBadge = `<span class="eval-time-badge soon">⏳ En ${d} días</span>`;
+          else if (d > 7) timeBadge = `<span class="eval-time-badge normal">📅 En ${d} días</span>`;
+          else if (d !== null && d < 0) timeBadge = '<span class="eval-time-badge past">✓ Realizada</span>';
+
+          let fechaLegible = ev.fecha || '';
+          if (ev.fecha) {
+            const parts = ev.fecha.split('-');
+            const dateObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            const diaSemana = DIAS_ES[dateObj.getDay()];
+            fechaLegible = `${diaSemana} ${parts[2]} de ${MESES_ES[parseInt(parts[1]) - 1]}`;
+          }
+
+          return `
+            <div class="eval-card ${cardTipoClass}">
+              <div class="eval-card-top">
+                <div class="eval-badge-group">
+                  <span class="eval-badge ${tipoBadgeClass}">${escapeHtml(ev.tipo)}</span>
+                  <span class="tag-pill course">Curso ${escapeHtml(ev.curso)}</span>
+                </div>
+                ${timeBadge}
+              </div>
+
+              <div class="eval-card-title">${escapeHtml(ev.titulo)}</div>
+
+              <div class="eval-card-meta">
+                <span style="display:flex; align-items:center; gap:4px; color:#fff;">
+                  📅 ${fechaLegible}
+                </span>
+                ${ev.hora ? `<span>⏰ ${escapeHtml(ev.hora)} hrs</span>` : ''}
+              </div>
+
+              ${ev.descripcion ? `
+                <div class="eval-card-desc">
+                  <strong>Temario de Estudio:</strong> ${escapeHtml(ev.descripcion)}
+                </div>
+              ` : ''}
+
+              <div class="eval-card-footer" style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 6px; margin-top: 4px;">
+                <div class="eval-decimas-meta">
+                  ⭐ Puedes aplicar hasta +${ev.max_decimas} décimas acumuladas
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      container.innerHTML = `
+        <div class="calendar-hybrid-wrapper">
+          <div class="mini-calendar-card">
+            <div class="calendar-month-header">
+              <div class="calendar-month-title">
+                <span>${MESES_ES[month]} ${year}</span>
+              </div>
+              <div class="calendar-nav-group">
+                <button class="btn-cal-today" onclick="portalCalGoToday()">Hoy</button>
+                <button class="btn-cal-nav" onclick="portalCalPrevMonth()">◀</button>
+                <button class="btn-cal-nav" onclick="portalCalNextMonth()">▶</button>
+              </div>
+            </div>
+
+            <div class="calendar-grid-weekdays">
+              <div class="calendar-weekday">Lu</div>
+              <div class="calendar-weekday">Ma</div>
+              <div class="calendar-weekday">Mi</div>
+              <div class="calendar-weekday">Ju</div>
+              <div class="calendar-weekday">Vi</div>
+              <div class="calendar-weekday">Sá</div>
+              <div class="calendar-weekday">Do</div>
+            </div>
+
+            <div class="calendar-grid-days">
+              ${daysHtml}
+            </div>
+          </div>
+
+          <div class="eval-agenda-header" style="margin-top: 4px;">
+            <div class="eval-agenda-title">
+              <span>📋</span> ${PortalState.selectedCalDateStr ? 'Evaluaciones de este día' : 'Próximas Pruebas & Evaluaciones'}
+            </div>
+            ${PortalState.selectedCalDateStr ? `
+              <button class="btn-filter-clear" onclick="portalCalClearFilter()">
+                Ver todas las fechas
+              </button>
+            ` : ''}
+          </div>
+
+          <div class="eval-card-list">
+            ${cardsHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    function onPortalDayClick(dateStr) {
+      if (PortalState.selectedCalDateStr === dateStr) {
+        PortalState.selectedCalDateStr = null;
+      } else {
+        PortalState.selectedCalDateStr = dateStr;
+      }
+      renderFeed();
+    }
+
+    function portalCalPrevMonth() {
+      PortalState.calCurrentDate.setMonth(PortalState.calCurrentDate.getMonth() - 1);
+      renderFeed();
+    }
+
+    function portalCalNextMonth() {
+      PortalState.calCurrentDate.setMonth(PortalState.calCurrentDate.getMonth() + 1);
+      renderFeed();
+    }
+
+    function portalCalGoToday() {
+      PortalState.calCurrentDate = new Date();
+      PortalState.selectedCalDateStr = null;
+      renderFeed();
+    }
+
+    function portalCalClearFilter() {
+      PortalState.selectedCalDateStr = null;
+      renderFeed();
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function onDownloadMaterialClick(materialId) {
+      // Registrar descarga en segundo plano para el estudiante activo
+      if (PortalState.activeStudent) {
+        setTimeout(async () => {
+          try {
+            const res = await fetch(`/api/portal/identificar?rut=${encodeURIComponent(PortalState.activeStudent.rut || '')}`);
+            const data = await res.json();
+            if (data && data.estudiante) {
+              PortalState.activeStudent = data.estudiante;
+              updateCounts();
+              const prevLector = PortalState.activeStudent.insignias?.find(i => i.id === 'lector_imparable')?.desbloqueado;
+              if (prevLector) {
+                showToast('¡Insignia Lector Imparable al día!', '📚');
+              }
+            }
+          } catch(e) {}
+        }, 1500);
+      }
+    }
+
+    // Renderizar colección de Insignias y Logros
+    function renderStudentBadges(container) {
+      const s = PortalState.activeStudent;
+      if (!s || !s.insignias || s.insignias.length === 0) {
+        container.innerHTML = `
+          <div class="empty-library">
+            <div style="font-size: 2.5rem; margin-bottom: 8px;">🏆</div>
+            <h3 style="font-size: 1.1rem; font-weight: 700;">Identifícate para ver tus Insignias</h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted); max-width: 320px; margin: 0 auto;">
+              Ingresa con tu RUT o tarjeta NFC para consultar tus logros y medallas desbloqueadas.
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      const total = s.insignias.length;
+      const desbloqueadas = s.insignias.filter(i => i.desbloqueado).length;
+      const pct = Math.round((desbloqueadas / total) * 100);
+
+      let html = `
+        <div class="badges-container">
+          <!-- Card Resumen de Logros -->
+          <div class="badges-summary-card">
+            <div style="flex: 1;">
+              <div style="font-size: 0.72rem; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.8px;">
+                🏆 Colección de Medallas Escolares
+              </div>
+              <div style="font-size: 1.15rem; font-weight: 900; color: #fff; margin: 4px 0;">
+                ${desbloqueadas} de ${total} Insignias Ganadas (${pct}%)
+              </div>
+              <div style="font-size: 0.78rem; color: var(--text-muted);">
+                ¡Participa en clases, haz tareas en equipo y estudia para desbloquearlas todas!
+              </div>
+              <div class="badges-progress-total">
+                <div class="badges-progress-bar-fill" style="width: ${pct}%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cuadrícula de Insignias -->
+          <div class="badges-grid">
+      `;
+
+      s.insignias.forEach(ins => {
+        const isUnl = ins.desbloqueado;
+        const cardClass = isUnl ? 'unlocked' : 'locked';
+        const rarityClass = `badge-rarity-${ins.rareza.toLowerCase()}`;
+        const pctProg = ins.meta > 0 ? Math.min(100, Math.round((ins.progreso_actual / ins.meta) * 100)) : 0;
+
+        html += `
+          <div class="badge-card ${cardClass}" onclick="onBadgeCardClick('${ins.id}', ${isUnl})">
+            <div class="badge-top-row">
+              <div class="badge-icon-bubble" style="background: ${ins.gradiente};">
+                ${isUnl ? ins.icono : '🔒'}
+              </div>
+              <div style="flex: 1;">
+                <span class="badge-rarity-pill ${rarityClass}">${ins.rareza}</span>
+                <div class="badge-title">${escapeHtml(ins.nombre)}</div>
+                <div class="badge-desc">${escapeHtml(ins.descripcion)}</div>
+              </div>
+            </div>
+
+            <div class="badge-status-box">
+              ${isUnl ? `
+                <div class="badge-unlocked-tag">
+                  <span>✨</span> ¡Conseguido!
+                </div>
+                <span style="font-size: 0.7rem; color: #6ee7b7; font-weight: 700;">Activo</span>
+              ` : `
+                <div class="badge-locked-track">
+                  <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">
+                    <span>Progreso</span>
+                    <span>${ins.progreso_actual} / ${ins.meta} ${ins.unidad || ''}</span>
+                  </div>
+                  <div class="badge-locked-track-bar">
+                    <div class="badge-locked-fill" style="width: ${pctProg}%;"></div>
+                  </div>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+      });
+
+      html += `
+          </div>
+        </div>
+      `;
+
+      container.innerHTML = html;
+    }
+
+    function onBadgeCardClick(badgeId, isUnlocked) {
+      if (isUnlocked) {
+        playAchievementSound();
+        showToast('¡Insignia de Honor conseguida! Excelente desempeño.', '🏆');
+      } else {
+        showToast('Sigue participando y cumpliendo metas para desbloquearla.', '🎯');
+      }
+    }
+
+    // Renderizar Buzón de Entregas del Estudiante
+    function renderStudentDeliveries(container) {
+      const s = PortalState.activeStudent;
+      if (!s) {
+        container.innerHTML = `
+          <div class="empty-library">
+            <div style="font-size: 2.5rem; margin-bottom: 8px;">📤</div>
+            <h3 style="font-size: 1.1rem; font-weight: 700;">Buzón de Entregas</h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted); max-width: 320px; margin: 0 auto 16px auto;">
+              Identifícate con tu RUT o tarjeta NFC para ver o enviar tus tareas al profesor.
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      const entregas = PortalState.entregas;
+
+      let html = `
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+          <div>
+            <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff;">Tus Trabajos y Tareas</h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted);">Historial de evidencias enviadas a revisión</p>
+          </div>
+          <button class="btn-action-resource btn-upload-task" onclick="openSubirEntregaModal(null, '')">
+            <span>➕</span> Nueva Entrega
+          </button>
+        </div>
+      `;
+
+      if (entregas.length === 0) {
+        html += `
+          <div class="empty-library">
+            <div style="font-size: 2.5rem; margin-bottom: 8px;">📝</div>
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 6px;">No has enviado tareas todavía</h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted); max-width: 320px; margin: 0 auto 14px auto;">
+              Sube fotos de tu cuaderno o archivos resueltos de las guías para ganar décimas bonus.
+            </p>
+            <button class="btn-action-resource btn-upload-task" onclick="openSubirEntregaModal(null, '')">
+              📤 Enviar Mi Primera Tarea
+            </button>
+          </div>
+        `;
+        container.innerHTML = html;
+        return;
+      }
+
+      html += `<div style="display: flex; flex-direction: column; gap: 14px;">`;
+
+      entregas.forEach(e => {
+        const isRev = e.estado === 'revisado';
+        const statusClass = isRev ? 'revisado' : 'pendiente';
+        const statusLabel = isRev ? `✅ Revisado (+${e.puntos_otorgados} pts)` : '⏳ En Revisión';
+
+        let filePreviewHtml = '';
+        if (e.tipo_archivo === 'imagen') {
+          filePreviewHtml = `
+            <div class="delivery-preview-box">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <img src="/entregas/descargar/${e.id}" alt="Foto tarea" class="delivery-preview-thumb" onclick="openLightbox('/entregas/descargar/${e.id}', '${escapeHtml(e.titulo_tarea)}')">
+                <div>
+                  <div style="font-size: 0.82rem; font-weight: 700; color: #fff;">${escapeHtml(e.archivo_nombre)}</div>
+                  <div style="font-size: 0.72rem; color: var(--accent-cyan); cursor: pointer;" onclick="openLightbox('/entregas/descargar/${e.id}', '${escapeHtml(e.titulo_tarea)}')">
+                    🔍 Toca para ampliar foto
+                  </div>
+                </div>
+              </div>
+              <a href="/entregas/descargar/${e.id}?download=1" class="btn-action-resource btn-resource-outline" style="padding: 6px 10px; font-size: 0.75rem;" download>
+                Descargar
+              </a>
+            </div>
+          `;
+        } else {
+          filePreviewHtml = `
+            <div class="delivery-preview-box">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.8rem;">📄</span>
+                <div>
+                  <div style="font-size: 0.82rem; font-weight: 700; color: #fff;">${escapeHtml(e.archivo_nombre)}</div>
+                  <div style="font-size: 0.72rem; color: var(--text-dim);">Documento PDF / Office</div>
+                </div>
+              </div>
+              <a href="/entregas/descargar/${e.id}?download=1" class="btn-action-resource btn-resource-outline" style="padding: 6px 10px; font-size: 0.75rem;" download>
+                Descargar
+              </a>
+            </div>
+          `;
+        }
+
+        html += `
+          <div class="delivery-card status-${statusClass}">
+            <div class="delivery-header">
+              <div>
+                <span class="delivery-status-pill ${statusClass}">${statusLabel}</span>
+                <h4 style="font-size: 1rem; font-weight: 800; color: #fff; margin-top: 6px;">
+                  ${escapeHtml(e.titulo_tarea)}
+                </h4>
+                <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 2px;">
+                  📅 Enviado: ${e.creado_en}
+                  ${e.material_titulo ? ` • Guía: <strong>${escapeHtml(e.material_titulo)}</strong>` : ''}
+                  ${e.evaluacion_titulo ? ` • Evaluación: <strong>${escapeHtml(e.evaluacion_titulo)}</strong>` : ''}
+                </div>
+              </div>
+            </div>
+
+            ${e.comentario ? `
+              <div class="delivery-student-comment">
+                "${escapeHtml(e.comentario)}"
+              </div>
+            ` : ''}
+
+            ${filePreviewHtml}
+
+            ${isRev && e.retroalimentacion ? `
+              <div class="teacher-feedback-bubble">
+                <div class="teacher-feedback-header">
+                  <span>💬 Mensaje del Profesor</span>
+                  <span>${e.revisado_en || ''}</span>
+                </div>
+                <div style="font-size: 0.82rem; color: #e2e8f0; line-height: 1.4;">
+                  "${escapeHtml(e.retroalimentacion)}"
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+      container.innerHTML = html;
+    }
+
+    // Modal Subir Entrega
+    function openSubirEntregaModal(materialId = null, materialTitulo = '', evalId = null) {
+      if (!PortalState.activeStudent) {
+        showToast('Debes ingresar con tu RUT o tarjeta NFC para entregar tareas.', '⚠️');
+        document.getElementById('section-auth').scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+
+      document.getElementById('entrega-material-id').value = materialId || '';
+      document.getElementById('entrega-evaluacion-id').value = evalId || '';
+
+      const tituloInput = document.getElementById('entrega-titulo-input');
+      if (materialTitulo) {
+        tituloInput.value = `Entrega: ${materialTitulo}`;
+      } else {
+        tituloInput.value = '';
+      }
+
+      document.getElementById('entrega-comentario-input').value = '';
+      clearEntregaFile();
+
+      document.getElementById('modal-subir-entrega').classList.add('active');
+    }
+
+    function closeSubirEntregaModal() {
+      document.getElementById('modal-subir-entrega').classList.remove('active');
+    }
+
+    function onEntregaFileChanged(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const wrap = document.getElementById('entrega-file-preview-wrap');
+      const imgPrev = document.getElementById('entrega-img-preview');
+      const docIcon = document.getElementById('entrega-doc-icon');
+      const nameEl = document.getElementById('entrega-file-name');
+      const sizeEl = document.getElementById('entrega-file-size');
+
+      nameEl.textContent = file.name;
+      sizeEl.textContent = `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          imgPrev.src = e.target.result;
+          imgPrev.style.display = 'block';
+          docIcon.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        imgPrev.style.display = 'none';
+        docIcon.style.display = 'block';
+      }
+
+      wrap.style.display = 'flex';
+    }
+
+    function clearEntregaFile() {
+      const fileInput = document.getElementById('entrega-file-input');
+      fileInput.value = '';
+      document.getElementById('entrega-file-preview-wrap').style.display = 'none';
+    }
+
+    async function submitFormEntrega(event) {
+      event.preventDefault();
+      const s = PortalState.activeStudent;
+      if (!s) return;
+
+      const fileInput = document.getElementById('entrega-file-input');
+      if (!fileInput.files || fileInput.files.length === 0) {
+        showToast('Debes seleccionar o fotografiar tu tarea.', '⚠️');
+        return;
+      }
+
+      const titulo = document.getElementById('entrega-titulo-input').value.trim();
+      const comentario = document.getElementById('entrega-comentario-input').value.trim();
+      const materialId = document.getElementById('entrega-material-id').value;
+      const evalId = document.getElementById('entrega-evaluacion-id').value;
+
+      const submitBtn = document.getElementById('btn-submit-entrega');
+      submitBtn.disabled = true;
+      submitBtn.textContent = '⏳ Subiendo evidencia...';
+
+      const formData = new FormData();
+      formData.append('estudiante_id', s.id);
+      formData.append('titulo_tarea', titulo);
+      formData.append('comentario', comentario);
+      if (materialId) formData.append('material_id', materialId);
+      if (evalId) formData.append('evaluacion_id', evalId);
+      formData.append('file', fileInput.files[0]);
+
+      try {
+        const res = await fetch('/api/portal/entregas', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          playAchievementSound();
+          showToast('¡Tarea enviada con éxito al profesor!', '🚀');
+          closeSubirEntregaModal();
+
+          // Actualizar estado local
+          PortalState.entregas.unshift(data.entrega);
+          if (data.insignias) {
+            PortalState.activeStudent.insignias = data.insignias;
+          }
+
+          updateCounts();
+
+          // Cambiar a la pestaña de entregas para que vea su trabajo subido
+          switchPortalChannel('entregas');
+        } else {
+          showToast(data.error || 'Error al enviar la tarea.', '❌');
+        }
+      } catch (err) {
+        showToast('Error de red al subir archivo.', '⚠️');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '🚀 Enviar Tarea al Profesor';
+      }
+    }
+
+    // Visor de Imagen Lightbox
+    function openLightbox(imgSrc, caption = '') {
+      document.getElementById('lightbox-img').src = imgSrc;
+      document.getElementById('lightbox-caption').textContent = caption;
+      document.getElementById('modal-lightbox').classList.add('active');
+    }
+
+    function closeLightbox() {
+      document.getElementById('modal-lightbox').classList.remove('active');
+    }
+
+    function resetPortalView() {
+      PortalState.activeStudent = null;
+      PortalState.activeCourse = null;
+      PortalState.materials = [];
+      PortalState.entregas = [];
+      PortalState.activeChannel = 'todos';
+      document.getElementById('section-portal-active').style.display = 'none';
+      document.getElementById('section-auth').style.display = 'block';
+      const btnIns = document.getElementById('tab-btn-insignias');
+      const btnEnt = document.getElementById('tab-btn-entregas');
+      if (btnIns) btnIns.style.display = 'none';
+      if (btnEnt) btnEnt.style.display = 'none';
+      const previewBox = document.getElementById('portal-badges-preview-box');
+      if (previewBox) previewBox.style.display = 'none';
+    }
+
+    // Pestañas
+    document.querySelectorAll('.channel-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.channel-tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        PortalState.activeChannel = btn.dataset.channel;
+        renderFeed();
+      });
+    });
+
+    // Buscador
+    document.getElementById('portal-search-input').addEventListener('input', () => {
+      renderFeed();
+    });
+
+    // Soporte Web NFC en Portal
+    async function startPortalNfc() {
+      if (!('NDEFReader' in window)) {
+        showToast('Web NFC no está disponible en este dispositivo o navegador. Usa tu RUT.', 'ℹ️');
+        return;
+      }
+      try {
+        const reader = new NDEFReader();
+        await reader.scan();
+        showToast('Acerca tu tarjeta NFC al teléfono...', '📶');
+        reader.onreading = event => {
+          const uid = event.serialNumber;
+          identify({ nfc_uid: uid });
+        };
+      } catch (err) {
+        showToast('Error al activar NFC: ' + err.message, '⚠️');
+      }
+    }
+
+    document.getElementById('btn-portal-nfc').addEventListener('click', startPortalNfc);
+
+    // Modal Simulador de Estudiantes
+    function openSimModal() {
+      const modal = document.getElementById('modal-portal-sim');
+      const container = document.getElementById('portal-sim-tags');
+      const sampleTags = [
+        { name: "Matías Silva (6B)", uid: "04:a1:b2:c3:d4:e5:01", rut: "21.345.678-9" },
+        { name: "Sofía Castro (6B)", uid: "04:f2:e3:d4:c5:b6:02", rut: "21.987.654-3" },
+        { name: "Benjamín Rojas (6B)", uid: "04:33:44:55:66:77:03", rut: "22.111.222-K" },
+        { name: "Camila Fuentes (7A)", uid: "04:12:34:56:78:90:06", rut: "20.890.123-4" }
+      ];
+
+      container.innerHTML = sampleTags.map(tag => `
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(30,41,69,0.7); border: 1px solid var(--border-glass); border-radius: var(--radius-md);">
+          <div>
+            <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">${tag.name}</div>
+            <div style="font-size: 0.75rem; color: var(--accent-cyan); font-family: monospace;">UID: ${tag.uid}</div>
+          </div>
+          <button class="btn-scan-nfc" onclick="closeSimModal(); identify({ nfc_uid: '${tag.uid}' });">
+            Simular Tap
+          </button>
+        </div>
+      `).join('');
+
+      modal.classList.add('active');
+    }
+
+    function closeSimModal() {
+      document.getElementById('modal-portal-sim').classList.remove('active');
+    }
+
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', () => {
+      loadPortalCursos();
+
+      // Cerrar modal al tocar overlay
+      document.getElementById('modal-portal-sim').addEventListener('click', (e) => {
+        if (e.target.id === 'modal-portal-sim') closeSimModal();
+      });
+      document.getElementById('modal-subir-entrega').addEventListener('click', (e) => {
+        if (e.target.id === 'modal-subir-entrega') closeSubirEntregaModal();
+      });
+    });
+  </script>
+</body>
+</html>
